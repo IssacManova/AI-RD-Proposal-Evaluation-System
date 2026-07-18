@@ -22,3 +22,5 @@ backend/models_saved/
 
 # Logs
 *.log
+
+uploads/

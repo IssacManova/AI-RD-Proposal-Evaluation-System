@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.config.database import db
 from app.config.settings import settings
 from app.routes.auth import router as auth_router
+from app.routes.proposal import router as proposal_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -10,7 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
-
+app.include_router(proposal_router)
 
 @app.get("/")
 def root():
