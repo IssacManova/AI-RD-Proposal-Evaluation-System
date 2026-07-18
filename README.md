@@ -2,6 +2,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.116-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen)
 ![License](https://img.shields.io/badge/License-Educational-orange)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 
 # 🤖 AI R&D Proposal Evaluation System
 
