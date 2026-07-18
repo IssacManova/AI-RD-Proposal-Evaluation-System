@@ -1,3 +1,8 @@
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.116-green)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen)
+![License](https://img.shields.io/badge/License-Educational-orange)
+
 # 🤖 AI R&D Proposal Evaluation System
 
 An AI-powered Research & Development (R&D) Proposal Evaluation System that automatically evaluates research proposals using Natural Language Processing (NLP), Machine Learning, and Large Language Models (LLMs).
