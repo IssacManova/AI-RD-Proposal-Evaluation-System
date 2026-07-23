@@ -2,64 +2,93 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.116-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen)
 ![License](https://img.shields.io/badge/License-Educational-orange)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Status](https://img.shields.io/badge/Status-Active%20Development-yellow)
 
-# 🤖 AI R&D Proposal Evaluation System
+# 🤖 AI-Based Research Proposal Evaluation System
 
-An AI-powered Research & Development (R&D) Proposal Evaluation System that automatically evaluates research proposals using Natural Language Processing (NLP), Machine Learning, and Large Language Models (LLMs).
+An AI-powered Research Proposal Evaluation System that automates the preliminary assessment of research proposals using Artificial Intelligence, Natural Language Processing (NLP), and Machine Learning techniques.
 
-The system enables researchers to upload research proposals in PDF format, automatically extracts and analyzes the content, compares it with existing proposals, and generates intelligent evaluation reports and recommendations.
+Researchers can securely upload research proposals in PDF format, after which the system extracts and preprocesses the proposal text for further AI-based evaluation. Upcoming modules will evaluate proposal quality, detect semantic similarity with existing proposals, and generate intelligent reviewer feedback using Large Language Models.
 
 ---
 
-## 📖 Project Overview
+# 📖 Project Overview
 
-Research proposal evaluation is traditionally a manual, time-consuming process that may be affected by inconsistency and human bias.
+Evaluating research proposals manually is often time-consuming, subjective, and inconsistent. This project aims to assist reviewers by providing an intelligent evaluation system capable of analyzing proposal content, identifying similar submissions, and generating automated evaluation reports.
 
-This project automates the evaluation process using Artificial Intelligence techniques including:
+The system leverages modern AI technologies including:
 
+- Google Gemini API
 - Sentence-BERT Embeddings
 - FAISS Similarity Search
-- Google Gemini AI
-- XGBoost Prediction Model
+- XGBoost Machine Learning
+- Natural Language Processing (NLP)
 
-The system provides fast, consistent, and intelligent evaluations while assisting reviewers in decision-making.
+The objective is to improve consistency, reduce evaluation time, and support evidence-based decision-making during research proposal assessment.
 
 ---
 
-## 🚀 Features
+# ✨ Current Features
 
-### ✅ User Authentication
+## 🔐 Authentication & Security
+
 - User Registration
 - User Login
+- Role-Based Access Control (Researcher, Reviewer, Admin)
 - JWT Authentication
-- Password Encryption (bcrypt)
-
-### ✅ Proposal Management
-- Upload PDF Research Proposals
-- Store Proposal Metadata
-- MongoDB Database Integration
-
-### 🚧 AI Evaluation (In Progress)
-- PDF Text Extraction
-- Text Preprocessing
-- Sentence-BERT Embeddings
-- Similarity Detection using FAISS
-- AI Evaluation using Google Gemini
-- Proposal Quality Prediction using XGBoost
-
-### 🚧 Dashboard (Upcoming)
-- Proposal Statistics
-- Similarity Scores
-- AI Evaluation Report
-- Recommendation Dashboard
+- Password Encryption using bcrypt
 
 ---
 
-## 🏗️ System Architecture
+## 📄 Proposal Management
 
-```
+- Upload Research Proposals (PDF)
+- Automatic PDF Validation
+- Store Proposal Metadata
+- MongoDB Atlas Integration
+- Proposal Upload History
+
+---
+
+## 📑 PDF Processing
+
+- Automatic PDF Text Extraction
+- Text Preprocessing
+- Cleaned Proposal Text Storage
+- AI-Ready Proposal Dataset
+
+---
+
+## 🚧 AI Evaluation (In Development)
+
+- Sentence-BERT Embedding Generation
+- Semantic Similarity Detection
+- FAISS Vector Search
+- Google Gemini Proposal Evaluation
+- Automated Proposal Scoring
+- AI Reviewer Feedback
+- Recommendation Generation
+
+---
+
+## 📊 Dashboard (Upcoming)
+
+- Researcher Dashboard
+- Reviewer Dashboard
+- Admin Dashboard
+- Proposal Analytics
+- Evaluation Reports
+- Similarity Reports
+
+---
+
+# 🏗️ System Workflow
+
+```text
 Researcher
+      │
+      ▼
+Secure Login
       │
       ▼
 Upload Proposal (PDF)
@@ -74,107 +103,121 @@ MongoDB Atlas
 PDF Text Extraction
       │
       ▼
+Text Preprocessing
+      │
+      ▼
 Sentence-BERT Embeddings
       │
       ▼
-FAISS Similarity Search
+FAISS Similarity Detection
       │
       ▼
 Gemini AI Evaluation
       │
       ▼
-XGBoost Prediction
+Proposal Score & Feedback
       │
       ▼
-Evaluation Dashboard
+Reviewer Dashboard
 ```
 
 ---
 
-## 🛠️ Technology Stack
+# 🛠️ Technology Stack
 
-### Backend
-- FastAPI
+## Backend
+
 - Python 3.11
+- FastAPI
+- Uvicorn
 
-### Database
+## Database
+
 - MongoDB Atlas
 - PyMongo
 
-### AI & Machine Learning
-- Sentence Transformers
-- FAISS
-- Google Gemini API
-- XGBoost
-- Scikit-learn
+## Authentication
 
-### Authentication
 - JWT
 - Passlib (bcrypt)
+- Python-JOSE
 
-### PDF Processing
+## AI & Machine Learning
+
+- Google Gemini API
+- Sentence Transformers (Sentence-BERT)
+- FAISS
+- XGBoost
+- Scikit-learn
+- NumPy
+- Pandas
+
+## Natural Language Processing
+
 - PyMuPDF (fitz)
+- Regular Expressions (Regex)
+- Text Preprocessing
 
-### Development Tools
+## Development Tools
+
 - Git
 - GitHub
+- VS Code
 - Swagger UI
-- Uvicorn
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
-AI-RD-Evaluation-System/
+AI-RD-Evaluation-System
 │
-├── backend/
-│   ├── app/
-│   │   ├── config/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   ├── ml/
-│   │   ├── utils/
+├── backend
+│   ├── app
+│   │   ├── config
+│   │   ├── constants
+│   │   ├── core
+│   │   ├── dependencies
+│   │   ├── exceptions
+│   │   ├── middleware
+│   │   ├── ml
+│   │   ├── models
+│   │   ├── repositories
+│   │   ├── routes
+│   │   ├── schemas
+│   │   ├── services
+│   │   ├── static
+│   │   ├── uploads
+│   │   ├── utils
 │   │   └── main.py
 │   │
-│   ├── uploads/
-│   │   └── proposals/
-│   │
+│   ├── models_saved
 │   ├── requirements.txt
 │   └── .env
 │
-├── dataset/
-│
-├── documentation/
-│
-├── reports/
-│
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## ⚙️ Installation
+# ⚙️ Installation
 
-### Clone the repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/IssacManova/AI-RD-Proposal-Evaluation-System.git
 
-cd AI-RD-Proposal-Evaluation-System/backend
+cd AI-RD-Proposal-Evaluation-System
 ```
 
 ---
 
-### Create Virtual Environment
+## Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
-
-Activate:
 
 Windows
 
@@ -190,7 +233,7 @@ source venv/bin/activate
 
 ---
 
-### Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -198,11 +241,9 @@ pip install -r requirements.txt
 
 ---
 
-### Configure Environment Variables
+## Configure Environment Variables
 
-Create a `.env` file inside the `backend` folder.
-
-Example:
+Create a `.env` file inside the `backend` directory.
 
 ```env
 APP_NAME=AI-RD Proposal Evaluation System
@@ -213,28 +254,33 @@ DEBUG=True
 HOST=127.0.0.1
 PORT=8000
 
-MONGODB_URI=your_mongodb_connection_string
-
+MONGODB_URI=YOUR_MONGODB_CONNECTION_STRING
 DATABASE_NAME=ai_rd_evaluation
 
-JWT_SECRET_KEY=your_secret_key
-
+JWT_SECRET_KEY=YOUR_SECRET_KEY
 JWT_ALGORITHM=HS256
-
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 
-GEMINI_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
 ---
 
-### Run the Application
+## Run the Application
+
+Navigate to the backend directory.
 
 ```bash
+cd backend
+
 uvicorn app.main:app --reload
 ```
 
-API Documentation
+---
+
+## API Documentation
+
+Swagger UI
 
 ```
 http://127.0.0.1:8000/docs
@@ -242,37 +288,46 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 📊 Current Progress
+# 📊 Development Progress
 
 | Module | Status |
 |---------|--------|
-| Project Structure | ✅ Completed |
-| MongoDB Integration | ✅ Completed |
-| Authentication | ✅ Completed |
-| JWT Security | ✅ Completed |
+| Project Setup | ✅ Completed |
+| MongoDB Atlas Integration | ✅ Completed |
+| User Authentication | ✅ Completed |
+| JWT Authentication | ✅ Completed |
+| Role-Based Access Control | ✅ Completed |
 | Proposal Upload | ✅ Completed |
-| PDF Text Extraction | 🚧 In Progress |
-| Sentence-BERT | ⏳ Planned |
-| FAISS Similarity | ⏳ Planned |
-| Gemini AI Evaluation | ⏳ Planned |
-| XGBoost Prediction | ⏳ Planned |
-| Dashboard | ⏳ Planned |
+| PDF Text Extraction | ✅ Completed |
+| Text Preprocessing | ✅ Completed |
+| Proposal Storage | ✅ Completed |
+| Sentence-BERT Embeddings | 🚧 In Development |
+| Semantic Similarity (FAISS) | 🚧 In Development |
+| Google Gemini Evaluation | ⏳ Planned |
+| Proposal Scoring | ⏳ Planned |
+| Reviewer Dashboard | ⏳ Planned |
+| Admin Dashboard | ⏳ Planned |
 
 ---
 
-## 🎯 Future Improvements
+# 🎯 Planned Features
 
-- Research Proposal Versioning
-- Reviewer Assignment Module
-- AI Chat Assistant
+- AI Proposal Quality Scoring
+- Novelty Detection
+- Semantic Similarity Detection
+- Duplicate Proposal Detection
+- AI Reviewer Comments
+- Automated Recommendation Generation
+- Downloadable Evaluation Report (PDF)
+- Proposal Ranking
 - Email Notifications
-- Advanced Analytics Dashboard
-- Multi-language Proposal Support
+- Reviewer Assignment
+- Research Analytics Dashboard
 - Cloud Deployment
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
 **Issac Manova Manoharan**
 
@@ -280,8 +335,10 @@ Final Year Undergraduate
 
 Faculty of Computing
 
+University Research Project
+
 ---
 
-## 📄 License
+# 📄 License
 
-This project is developed for educational and research purposes as part of a Final Year Undergraduate Project.
+This project is developed solely for educational and academic research purposes as part of a Final Year Undergraduate Project.
