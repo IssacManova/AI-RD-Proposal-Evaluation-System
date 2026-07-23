@@ -1,5 +1,13 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    Form,
+    HTTPException,
+    Depends,
+)
 
+from app.dependencies.auth import require_role
 from app.services.proposal_service import save_proposal
 
 router = APIRouter(prefix="/proposal", tags=["Proposal"])
@@ -9,8 +17,8 @@ router = APIRouter(prefix="/proposal", tags=["Proposal"])
 def upload_proposal(
     title: str = Form(...),
     domain: str = Form(...),
-    researcher_email: str = Form(...),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    current_user=Depends(require_role("researcher"))
 ):
 
     if not file.filename.endswith(".pdf"):
@@ -20,11 +28,11 @@ def upload_proposal(
         )
 
     proposal = save_proposal(
-        file=file,
-        title=title,
-        domain=domain,
-        researcher_email=researcher_email,
-    )
+    file=file,
+    title=title,
+    domain=domain,
+    researcher_email=current_user["email"],
+)
 
     return {
         "message": "Proposal uploaded successfully.",
