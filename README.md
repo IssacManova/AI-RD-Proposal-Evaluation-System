@@ -1,30 +1,33 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.116-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen)
+![Google Gemini](https://img.shields.io/badge/Google-Gemini_AI-blueviolet)
 ![License](https://img.shields.io/badge/License-Educational-orange)
 ![Status](https://img.shields.io/badge/Status-Active%20Development-yellow)
 
 # 🤖 AI-Based Research Proposal Evaluation System
 
-An AI-powered Research Proposal Evaluation System that automates the preliminary assessment of research proposals using Artificial Intelligence, Natural Language Processing (NLP), and Machine Learning techniques.
+An AI-powered **Research Proposal Evaluation System** that automates the preliminary assessment of research proposals using **Artificial Intelligence (AI)**, **Natural Language Processing (NLP)**, **Machine Learning**, and **Large Language Models (Google Gemini)**.
 
-Researchers can securely upload research proposals in PDF format, after which the system extracts and preprocesses the proposal text for further AI-based evaluation. Upcoming modules will evaluate proposal quality, detect semantic similarity with existing proposals, and generate intelligent reviewer feedback using Large Language Models.
+Researchers can securely upload research proposals in PDF format. The system automatically extracts and preprocesses the proposal text, performs AI-based evaluation, generates structured reviewer feedback, and stores all proposal data securely in MongoDB Atlas. Future enhancements include semantic similarity detection, duplicate proposal identification, and intelligent reviewer assignment.
 
 ---
 
 # 📖 Project Overview
 
-Evaluating research proposals manually is often time-consuming, subjective, and inconsistent. This project aims to assist reviewers by providing an intelligent evaluation system capable of analyzing proposal content, identifying similar submissions, and generating automated evaluation reports.
+Evaluating research proposals manually is often time-consuming, subjective, and inconsistent. This project provides an AI-assisted decision-support platform that helps reviewers by automatically analyzing research proposals and generating structured evaluation reports.
 
-The system leverages modern AI technologies including:
+The system is designed to **assist reviewers**, not replace them.
+
+The project integrates modern AI technologies including:
 
 - Google Gemini API
-- Sentence-BERT Embeddings
-- FAISS Similarity Search
-- XGBoost Machine Learning
 - Natural Language Processing (NLP)
+- Sentence-BERT Embeddings *(Upcoming)*
+- FAISS Semantic Similarity *(Upcoming)*
+- XGBoost Machine Learning *(Upcoming)*
 
-The objective is to improve consistency, reduce evaluation time, and support evidence-based decision-making during research proposal assessment.
+The objective is to improve evaluation consistency, reduce manual effort, and provide transparent AI-assisted recommendations.
 
 ---
 
@@ -34,7 +37,10 @@ The objective is to improve consistency, reduce evaluation time, and support evi
 
 - User Registration
 - User Login
-- Role-Based Access Control (Researcher, Reviewer, Admin)
+- Role-Based Access Control
+  - Researcher
+  - Reviewer
+  - Administrator
 - JWT Authentication
 - Password Encryption using bcrypt
 
@@ -59,15 +65,30 @@ The objective is to improve consistency, reduce evaluation time, and support evi
 
 ---
 
-## 🚧 AI Evaluation (In Development)
+## 🤖 AI Proposal Evaluation
+
+- Google Gemini API Integration
+- Automatic Proposal Evaluation
+- Proposal Summary Generation
+- Novelty Score
+- Methodology Score
+- Feasibility Score
+- Clarity Score
+- AI-generated Strengths
+- AI-generated Weaknesses
+- AI-generated Suggestions
+- Overall Recommendation
+- Structured JSON Evaluation Output
+
+---
+
+## 🚧 AI Features (In Development)
 
 - Sentence-BERT Embedding Generation
 - Semantic Similarity Detection
 - FAISS Vector Search
-- Google Gemini Proposal Evaluation
-- Automated Proposal Scoring
-- AI Reviewer Feedback
-- Recommendation Generation
+- Duplicate Proposal Detection
+- Reviewer Recommendation Module
 
 ---
 
@@ -75,10 +96,11 @@ The objective is to improve consistency, reduce evaluation time, and support evi
 
 - Researcher Dashboard
 - Reviewer Dashboard
-- Admin Dashboard
+- Administrator Dashboard
 - Proposal Analytics
 - Evaluation Reports
 - Similarity Reports
+- Proposal Statistics
 
 ---
 
@@ -106,19 +128,19 @@ PDF Text Extraction
 Text Preprocessing
       │
       ▼
-Sentence-BERT Embeddings
+Google Gemini AI Evaluation
       │
       ▼
-FAISS Similarity Detection
+Structured JSON Evaluation
       │
       ▼
-Gemini AI Evaluation
+Sentence-BERT Embeddings (Upcoming)
       │
       ▼
-Proposal Score & Feedback
+FAISS Similarity Detection (Upcoming)
       │
       ▼
-Reviewer Dashboard
+Reviewer Dashboard (Upcoming)
 ```
 
 ---
@@ -131,26 +153,38 @@ Reviewer Dashboard
 - FastAPI
 - Uvicorn
 
+---
+
 ## Database
 
 - MongoDB Atlas
 - PyMongo
 
+---
+
 ## Authentication
 
 - JWT
-- Passlib (bcrypt)
 - Python-JOSE
+- Passlib (bcrypt)
 
-## AI & Machine Learning
+---
+
+## Artificial Intelligence
+
+### Implemented
 
 - Google Gemini API
+- JSON Structured AI Evaluation
+
+### Planned
+
 - Sentence Transformers (Sentence-BERT)
 - FAISS
 - XGBoost
 - Scikit-learn
-- NumPy
-- Pandas
+
+---
 
 ## Natural Language Processing
 
@@ -158,42 +192,48 @@ Reviewer Dashboard
 - Regular Expressions (Regex)
 - Text Preprocessing
 
+---
+
 ## Development Tools
 
 - Git
 - GitHub
 - VS Code
 - Swagger UI
+- Postman
 
 ---
 
 # 📂 Project Structure
 
-```
+```text
 AI-RD-Evaluation-System
 │
 ├── backend
+│   │
 │   ├── app
+│   │   │
 │   │   ├── config
-│   │   ├── constants
-│   │   ├── core
 │   │   ├── dependencies
-│   │   ├── exceptions
-│   │   ├── middleware
-│   │   ├── ml
 │   │   ├── models
-│   │   ├── repositories
 │   │   ├── routes
 │   │   ├── schemas
 │   │   ├── services
-│   │   ├── static
-│   │   ├── uploads
+│   │   │   ├── evaluation_service.py
+│   │   │   ├── pdf_service.py
+│   │   │   ├── preprocessing.py
+│   │   │   └── proposal_service.py
+│   │   │
 │   │   ├── utils
 │   │   └── main.py
 │   │
-│   ├── models_saved
+│   ├── uploads
+│   │   └── proposals
+│   │
 │   ├── requirements.txt
 │   └── .env
+│
+├── frontend (Upcoming)
 │
 ├── README.md
 └── .gitignore
@@ -219,13 +259,13 @@ cd AI-RD-Proposal-Evaluation-System
 python -m venv venv
 ```
 
-Windows
+### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-Linux / macOS
+### Linux / macOS
 
 ```bash
 source venv/bin/activate
@@ -236,6 +276,8 @@ source venv/bin/activate
 ## Install Dependencies
 
 ```bash
+cd backend
+
 pip install -r requirements.txt
 ```
 
@@ -243,7 +285,7 @@ pip install -r requirements.txt
 
 ## Configure Environment Variables
 
-Create a `.env` file inside the `backend` directory.
+Create a `.env` file inside the **backend** folder.
 
 ```env
 APP_NAME=AI-RD Proposal Evaluation System
@@ -268,11 +310,7 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 
 ## Run the Application
 
-Navigate to the backend directory.
-
 ```bash
-cd backend
-
 uvicorn app.main:app --reload
 ```
 
@@ -282,8 +320,44 @@ uvicorn app.main:app --reload
 
 Swagger UI
 
-```
+```text
 http://127.0.0.1:8000/docs
+```
+
+---
+
+# 📊 Sample AI Evaluation Output
+
+```json
+{
+  "summary": "This proposal presents an AI-assisted research proposal evaluation platform designed to automate preliminary proposal screening while maintaining human reviewer oversight.",
+
+  "novelty_score": 8,
+
+  "methodology_score": 9,
+
+  "feasibility_score": 8,
+
+  "clarity_score": 9,
+
+  "strengths": [
+    "Well-defined research objectives",
+    "Appropriate AI technologies",
+    "Practical implementation plan"
+  ],
+
+  "weaknesses": [
+    "Limited dataset description",
+    "Evaluation metrics require expansion"
+  ],
+
+  "suggestions": [
+    "Include benchmark comparisons",
+    "Provide dataset statistics"
+  ],
+
+  "overall_recommendation": "Accept with Minor Revisions"
+}
 ```
 
 ---
@@ -298,32 +372,64 @@ http://127.0.0.1:8000/docs
 | JWT Authentication | ✅ Completed |
 | Role-Based Access Control | ✅ Completed |
 | Proposal Upload | ✅ Completed |
+| PDF Storage | ✅ Completed |
 | PDF Text Extraction | ✅ Completed |
 | Text Preprocessing | ✅ Completed |
-| Proposal Storage | ✅ Completed |
+| Google Gemini AI Evaluation | ✅ Completed |
+| Structured JSON Evaluation | ✅ Completed |
+| AI Proposal Scoring | ✅ Completed |
 | Sentence-BERT Embeddings | 🚧 In Development |
 | Semantic Similarity (FAISS) | 🚧 In Development |
-| Google Gemini Evaluation | ⏳ Planned |
-| Proposal Scoring | ⏳ Planned |
+| Duplicate Proposal Detection | ⏳ Planned |
 | Reviewer Dashboard | ⏳ Planned |
 | Admin Dashboard | ⏳ Planned |
+| React Frontend | ⏳ Planned |
+| Cloud Deployment | ⏳ Planned |
 
 ---
 
 # 🎯 Planned Features
 
-- AI Proposal Quality Scoring
-- Novelty Detection
-- Semantic Similarity Detection
+- Sentence-BERT Semantic Embeddings
+- FAISS Similarity Search
 - Duplicate Proposal Detection
-- AI Reviewer Comments
-- Automated Recommendation Generation
-- Downloadable Evaluation Report (PDF)
+- Reviewer Recommendation System
 - Proposal Ranking
+- Explainable AI Dashboard
+- Downloadable Evaluation Report (PDF)
+- Proposal Analytics Dashboard
 - Email Notifications
-- Reviewer Assignment
-- Research Analytics Dashboard
-- Cloud Deployment
+- Multi-language Proposal Support
+- React Frontend
+- Docker Containerization
+- Cloud Deployment (AWS / Azure)
+
+---
+
+# 🚀 Future Roadmap
+
+### Phase 1 ✅
+- Authentication
+- Proposal Upload
+- PDF Processing
+- Google Gemini Evaluation
+
+### Phase 2 🚧
+- Sentence-BERT Embeddings
+- FAISS Similarity Search
+- Duplicate Detection
+
+### Phase 3 ⏳
+- React Frontend
+- Researcher Dashboard
+- Reviewer Dashboard
+- Admin Dashboard
+
+### Phase 4 ⏳
+- Report Generation
+- Deployment
+- Final Testing
+- Performance Optimization
 
 ---
 
@@ -335,7 +441,7 @@ Final Year Undergraduate
 
 Faculty of Computing
 
-University Research Project
+AI & Machine Learning Specialization
 
 ---
 
