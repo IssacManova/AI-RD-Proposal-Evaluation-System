@@ -5,6 +5,7 @@ from app.services.pdf_service import extract_text
 from app.services.preprocessing import preprocess_text
 from app.config.database import db
 from app.models.proposal import Proposal
+from app.services.evaluation_service import evaluate_proposal
 
 from pathlib import Path
 
@@ -33,6 +34,7 @@ def save_proposal(file, title, domain, researcher_email):
 
     # Clean extracted text
     clean_text = preprocess_text(raw_text)
+    evaluation = evaluate_proposal(clean_text)
 
     proposal = Proposal(
     title=title,
@@ -44,6 +46,7 @@ def save_proposal(file, title, domain, researcher_email):
     )
 
     proposal_data = proposal.to_dict()
+    proposal_data["evaluation"] = evaluation
 
     result = proposal_collection.insert_one(proposal_data)
 
