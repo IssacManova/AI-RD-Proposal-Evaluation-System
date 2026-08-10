@@ -19,10 +19,9 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
-  { label: 'Dashboard',          href: '/reviewer',          icon: LayoutDashboard },
-  { label: 'Assigned Proposals', href: '/reviewer/proposals', icon: BookOpen },
-  { label: 'All Proposals',      href: '/reviewer/all',       icon: FileText },
-  { label: 'Profile',            href: '/reviewer/profile',   icon: User },
+  { label: 'Dashboard',            href: '/reviewer',          icon: LayoutDashboard },
+  { label: 'Proposals for Review', href: '/reviewer/proposals', icon: BookOpen },
+  { label: 'Profile',              href: '/reviewer/profile',  icon: User },
 ];
 
 type Tab = 'ai-evaluation' | 'similarity' | 'human-review';

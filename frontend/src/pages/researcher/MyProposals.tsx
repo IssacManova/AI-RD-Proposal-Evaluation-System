@@ -73,10 +73,10 @@ export default function MyProposals() {
           <option value="">All Domains</option>
           {domains.map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="input-field sm:w-40">
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className="input-field sm:w-48">
           <option value="">All Statuses</option>
-          <option value="evaluated">Evaluated</option>
-          <option value="pending">Pending</option>
+          <option value="evaluated">AI Evaluated</option>
+          <option value="pending">Awaiting AI Evaluation</option>
         </select>
       </div>
 

@@ -177,6 +177,17 @@ function AdminOverviewTab({ proposal }: { proposal: Proposal }) {
           </div>
         </div>
 
+        {/* AI vs Human score comparison — shown when both exist */}
+        {hr && proposal.evaluation && !proposal.evaluation.error && (
+          <ScoreComparisonCard
+            aiScore={proposal.evaluation.overall_score}
+            humanScore={((hr.novelty_score + hr.methodology_score + hr.feasibility_score + hr.clarity_score) / 4)}
+            finalDecision={hr.final_recommendation}
+            reviewerEmail={hr.reviewer_email}
+            reviewedAt={hr.reviewed_at}
+          />
+        )}
+
         {/* AI Summary */}
         {proposal.evaluation?.summary && (
           <div className="card p-6">
@@ -303,6 +314,74 @@ function ScoreSection({
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+function ScoreComparisonCard({
+  aiScore,
+  humanScore,
+  finalDecision,
+  reviewerEmail,
+  reviewedAt,
+}: {
+  aiScore: number;
+  humanScore: number;
+  finalDecision: string;
+  reviewerEmail: string;
+  reviewedAt?: string;
+}) {
+  const diff = Math.abs(aiScore - humanScore).toFixed(2);
+  const humanAvg = Number(humanScore.toFixed(1));
+
+  const decisionConfig: Record<string, { label: string; cls: string }> = {
+    accept:                { label: '✅ Accepted',              cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    accept_with_revisions: { label: '📝 Accepted with Revisions', cls: 'bg-sky-100 text-sky-700 border-sky-200'          },
+    revise:                { label: '🔄 Revise',                cls: 'bg-amber-100 text-amber-700 border-amber-200'      },
+    reject:                { label: '❌ Rejected',              cls: 'bg-rose-100 text-rose-700 border-rose-200'         },
+  };
+  const dc = decisionConfig[finalDecision] ?? { label: finalDecision, cls: 'bg-slate-100 text-slate-600 border-slate-200' };
+
+  return (
+    <div className="card p-6 border-violet-100 bg-gradient-to-br from-violet-50/40 via-white to-sky-50/30">
+      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span className="w-6 h-6 rounded-lg bg-violet-100 flex items-center justify-center text-xs">⚖</span>
+        AI vs Human Score Comparison
+      </h3>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="text-center p-3 bg-primary-50 rounded-xl border border-primary-100">
+          <p className="text-[10px] font-semibold text-primary-600 uppercase tracking-wider mb-1">AI Score</p>
+          <p className="text-2xl font-extrabold text-primary-600">{aiScore}</p>
+          <p className="text-[10px] text-slate-400">/ 10</p>
+        </div>
+        <div className="text-center p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Diff</p>
+          <p className="text-xl font-extrabold text-slate-600">±{diff}</p>
+          <p className="text-[10px] text-slate-400">pts</p>
+        </div>
+        <div className={`text-center p-3 rounded-xl border ${
+          humanAvg >= 7 ? 'bg-emerald-50 border-emerald-100' :
+          humanAvg >= 5 ? 'bg-amber-50 border-amber-100' : 'bg-rose-50 border-rose-100'
+        }`}>
+          <p className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${
+            humanAvg >= 7 ? 'text-emerald-600' : humanAvg >= 5 ? 'text-amber-600' : 'text-rose-600'
+          }`}>Human Score</p>
+          <p className={`text-2xl font-extrabold ${
+            humanAvg >= 7 ? 'text-emerald-600' : humanAvg >= 5 ? 'text-amber-600' : 'text-rose-600'
+          }`}>{humanAvg}</p>
+          <p className="text-[10px] text-slate-400">/ 10</p>
+        </div>
+      </div>
+      <div className={`flex items-center justify-between p-3 rounded-xl border ${dc.cls}`}>
+        <div>
+          <p className="text-[10px] font-semibold opacity-70 uppercase tracking-wider mb-0.5">Final Decision</p>
+          <p className="text-sm font-bold">{dc.label}</p>
+        </div>
+        <div className="text-right text-[10px] opacity-60">
+          <p>by {reviewerEmail}</p>
+          {reviewedAt && <p>{new Date(reviewedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
+        </div>
+      </div>
     </div>
   );
 }

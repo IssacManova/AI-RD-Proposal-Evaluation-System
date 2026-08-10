@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from datetime import datetime
 from app.schemas.user import UserRegister, UserLogin
 from app.services.auth_service import (
     hash_password,
@@ -26,8 +27,9 @@ def register(user: UserRegister):
         )
 
     user_dict = user.model_dump()
-
     user_dict["password"] = hash_password(user.password)
+    user_dict["created_at"] = datetime.utcnow().isoformat()
+    user_dict["status"] = "active"
 
     create_user(user_dict)
 
@@ -55,7 +57,8 @@ def login(user: UserLogin):
 
     token = create_access_token({
         "email": db_user["email"],
-        "role": db_user["role"]
+        "role": db_user["role"],
+        "name": db_user.get("name", "")
     })
 
     return {

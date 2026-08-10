@@ -4,7 +4,7 @@ from app.config.settings import settings
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-3.5-flash")
 
 
 def evaluate_proposal(proposal_text: str):

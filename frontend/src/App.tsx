@@ -88,11 +88,7 @@ function App() {
               <ReviewProposal />
             </RoleProtectedRoute>
           } />
-          <Route path="/reviewer/all" element={
-            <RoleProtectedRoute role="reviewer" fallback="/login">
-              <AssignedProposals />
-            </RoleProtectedRoute>
-          } />
+          <Route path="/reviewer/all" element={<Navigate to="/reviewer/proposals" replace />} />
           <Route path="/reviewer/profile" element={
             <RoleProtectedRoute role="reviewer" fallback="/login">
               <ProfilePage role="reviewer" />

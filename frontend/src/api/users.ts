@@ -3,16 +3,7 @@ import type { User } from '../types';
 
 export const usersApi = {
   /**
-   * GET /users/me  (NOT YET IMPLEMENTED IN BACKEND)
-   * Returns the currently authenticated user's full profile.
-   */
-  getMe: async (): Promise<User> => {
-    const res = await api.get<User>('/users/me');
-    return res.data;
-  },
-
-  /**
-   * GET /users/  (NOT YET IMPLEMENTED IN BACKEND)
+   * GET /users/
    * Admin: list all users.
    */
   getAllUsers: async (): Promise<User[]> => {
@@ -21,11 +12,29 @@ export const usersApi = {
   },
 
   /**
-   * PATCH /users/:id  (NOT YET IMPLEMENTED IN BACKEND)
+   * GET /users/:id
+   * Admin: get a single user by ID.
+   */
+  getUser: async (id: string): Promise<User> => {
+    const res = await api.get<User>(`/users/${id}`);
+    return res.data;
+  },
+
+  /**
+   * PATCH /users/:id
    * Admin: update a user's role or status.
    */
   updateUser: async (id: string, data: Partial<User>): Promise<{ message: string }> => {
     const res = await api.patch<{ message: string }>(`/users/${id}`, data);
+    return res.data;
+  },
+
+  /**
+   * DELETE /users/:id
+   * Admin: delete a user.
+   */
+  deleteUser: async (id: string): Promise<{ message: string }> => {
+    const res = await api.delete<{ message: string }>(`/users/${id}`);
     return res.data;
   },
 };

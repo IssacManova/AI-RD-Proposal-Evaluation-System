@@ -16,9 +16,9 @@ const navsByRole = {
     { label: 'Profile',         href: '/researcher/profile',  icon: User },
   ],
   reviewer: [
-    { label: 'Dashboard',         href: '/reviewer',          icon: LayoutDashboard },
-    { label: 'Assigned Proposals',href: '/reviewer/proposals',icon: FileText },
-    { label: 'Profile',           href: '/reviewer/profile',  icon: User },
+    { label: 'Dashboard',            href: '/reviewer',          icon: LayoutDashboard },
+    { label: 'Proposals for Review', href: '/reviewer/proposals', icon: FileText },
+    { label: 'Profile',              href: '/reviewer/profile',  icon: User },
   ],
   admin: [
     { label: 'Dashboard', href: '/admin',           icon: LayoutDashboard },

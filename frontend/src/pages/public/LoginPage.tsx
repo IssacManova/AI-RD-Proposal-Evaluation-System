@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Brain, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -13,11 +13,27 @@ export default function LoginPage() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
 
-  const { login, user } = useAuth();
+  const { login, user, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  const fromState = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  // Ensure we never redirect back to public routes like /login, /register, or /
+  const targetFrom = (fromState && !['/login', '/register', '/'].includes(fromState)) ? fromState : null;
+
+  const getDashboard = (role?: string) => {
+    if (role === 'admin') return '/admin';
+    if (role === 'reviewer') return '/reviewer';
+    return '/researcher';
+  };
+
+  // Redirect automatically when user becomes authenticated (either after login or if already logged in)
+  useEffect(() => {
+    if (!isLoading && user) {
+      const dest = targetFrom || getDashboard(user.role);
+      navigate(dest, { replace: true });
+    }
+  }, [user, isLoading, targetFrom, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +42,12 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       toast.success('Welcome back!');
-      // Role-based redirect
-      const role = (await import('../../utils/jwt')).decodeToken(localStorage.getItem('access_token') || '')?.role;
-      const dest = from || (role === 'admin' ? '/admin' : role === 'reviewer' ? '/reviewer' : '/researcher');
-      navigate(dest, { replace: true });
+      // useEffect above will catch user state change and navigate to the dashboard
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail || 'Login failed. Please check your credentials.';
+      const msg =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        'Login failed. Please check your credentials.';
       setError(msg);
-    } finally {
       setLoading(false);
     }
   };

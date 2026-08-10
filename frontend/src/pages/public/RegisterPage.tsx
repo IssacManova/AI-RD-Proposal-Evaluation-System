@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Brain, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -32,8 +32,16 @@ export default function RegisterPage() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
 
-  const { register } = useAuth();
+  const { register, user, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect automatically if already logged in
+  useEffect(() => {
+    if (!isLoading && user) {
+      const dest = user.role === 'admin' ? '/admin' : user.role === 'reviewer' ? '/reviewer' : '/researcher';
+      navigate(dest, { replace: true });
+    }
+  }, [user, isLoading, navigate]);
 
   const strength = passwordStrength(password);
 

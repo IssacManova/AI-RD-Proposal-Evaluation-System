@@ -161,6 +161,17 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
           </div>
         </div>
 
+        {/* AI vs Human comparison — only show when both exist */}
+        {hasHumanReview && hr && proposal.evaluation && !proposal.evaluation.error && (
+          <ScoreComparisonCard
+            aiScore={proposal.evaluation.overall_score}
+            humanScore={((hr.novelty_score + hr.methodology_score + hr.feasibility_score + hr.clarity_score) / 4)}
+            finalDecision={hr.final_recommendation}
+            reviewerEmail={hr.reviewer_email}
+            reviewedAt={hr.reviewed_at}
+          />
+        )}
+
         {/* Summary */}
         {proposal.evaluation?.summary && (
           <div className="card p-6">
@@ -186,7 +197,10 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
         {/* AI scores */}
         {proposal.evaluation && !proposal.evaluation.error ? (
           <div className="card p-6">
-            <h3 className="section-title mb-4">AI Scores</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <CheckCircle2 className="w-4 h-4 text-primary-500" />
+              <h3 className="section-title">AI Scores</h3>
+            </div>
             <div className="space-y-3">
               {[
                 { label: 'Novelty',      score: proposal.evaluation.novelty_score },
@@ -209,7 +223,7 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
               ))}
               <div className="pt-3 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-bold text-slate-700">Overall</p>
+                  <p className="text-sm font-bold text-slate-700">Overall AI Score</p>
                   <p className="text-xl font-bold text-primary-600">
                     {proposal.evaluation.overall_score}
                     <span className="text-xs text-slate-400 font-normal">/10</span>
@@ -256,7 +270,7 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
               })}
               <div className="pt-3 border-t border-sky-100">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-bold text-sky-700">Recommendation</p>
+                  <p className="text-sm font-bold text-sky-700">Final Decision</p>
                 </div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ${
                   hr.final_recommendation === 'accept'                ? 'bg-emerald-100 text-emerald-700' :
@@ -277,11 +291,97 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
         {/* Similarity score */}
         {proposal.similarity_score !== null && (
           <div className="card p-5">
-            <p className="text-xs text-slate-500 mb-1">Highest Similarity</p>
+            <p className="text-xs text-slate-500 mb-1">Highest Semantic Similarity</p>
             <p className="text-2xl font-bold text-slate-800">{proposal.similarity_score}%</p>
+            <div className="mt-1.5 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full ${
+                  proposal.similarity_score >= 80 ? 'bg-rose-500' :
+                  proposal.similarity_score >= 50 ? 'bg-amber-500' : 'bg-primary-500'
+                }`}
+                style={{ width: `${proposal.similarity_score}%` }}
+              />
+            </div>
             <p className="text-xs text-slate-400 mt-1">{proposal.similarity?.length || 0} similar proposals found</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** AI vs Human score comparison — shown when both evaluations exist */
+function ScoreComparisonCard({
+  aiScore,
+  humanScore,
+  finalDecision,
+  reviewerEmail,
+  reviewedAt,
+}: {
+  aiScore: number;
+  humanScore: number;
+  finalDecision: string;
+  reviewerEmail: string;
+  reviewedAt?: string;
+}) {
+  const diff = Math.abs(aiScore - humanScore).toFixed(2);
+  const humanAvg = Number(humanScore.toFixed(1));
+
+  const decisionConfig: Record<string, { label: string; cls: string }> = {
+    accept:                { label: '✅ Accepted',              cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    accept_with_revisions: { label: '📝 Accepted with Revisions', cls: 'bg-sky-100 text-sky-700 border-sky-200'          },
+    revise:                { label: '🔄 Revise',                cls: 'bg-amber-100 text-amber-700 border-amber-200'      },
+    reject:                { label: '❌ Rejected',              cls: 'bg-rose-100 text-rose-700 border-rose-200'         },
+  };
+  const dc = decisionConfig[finalDecision] ?? { label: finalDecision, cls: 'bg-slate-100 text-slate-600 border-slate-200' };
+
+  return (
+    <div className="card p-6 border-violet-100 bg-gradient-to-br from-violet-50/40 via-white to-sky-50/30">
+      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span className="w-6 h-6 rounded-lg bg-violet-100 flex items-center justify-center text-xs">⚖</span>
+        AI vs Human Score Comparison
+      </h3>
+
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        {/* AI Score */}
+        <div className="text-center p-3 bg-primary-50 rounded-xl border border-primary-100">
+          <p className="text-[10px] font-semibold text-primary-600 uppercase tracking-wider mb-1">AI Score</p>
+          <p className="text-2xl font-extrabold text-primary-600">{aiScore}</p>
+          <p className="text-[10px] text-slate-400">/ 10</p>
+        </div>
+
+        {/* Difference */}
+        <div className="text-center p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col justify-center">
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Diff</p>
+          <p className="text-xl font-extrabold text-slate-600">±{diff}</p>
+          <p className="text-[10px] text-slate-400">pts</p>
+        </div>
+
+        {/* Human Score */}
+        <div className={`text-center p-3 rounded-xl border ${
+          humanAvg >= 7 ? 'bg-emerald-50 border-emerald-100' :
+          humanAvg >= 5 ? 'bg-amber-50 border-amber-100' : 'bg-rose-50 border-rose-100'
+        }`}>
+          <p className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${
+            humanAvg >= 7 ? 'text-emerald-600' : humanAvg >= 5 ? 'text-amber-600' : 'text-rose-600'
+          }`}>Human Score</p>
+          <p className={`text-2xl font-extrabold ${
+            humanAvg >= 7 ? 'text-emerald-600' : humanAvg >= 5 ? 'text-amber-600' : 'text-rose-600'
+          }`}>{humanAvg}</p>
+          <p className="text-[10px] text-slate-400">/ 10</p>
+        </div>
+      </div>
+
+      {/* Final decision */}
+      <div className={`flex items-center justify-between p-3 rounded-xl border ${dc.cls}`}>
+        <div>
+          <p className="text-[10px] font-semibold opacity-70 uppercase tracking-wider mb-0.5">Final Decision</p>
+          <p className="text-sm font-bold">{dc.label}</p>
+        </div>
+        <div className="text-right text-[10px] opacity-60">
+          <p>by {reviewerEmail}</p>
+          {reviewedAt && <p>{new Date(reviewedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
+        </div>
       </div>
     </div>
   );
