@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import EvaluationCard from '../../components/evaluation/EvaluationCard';
 import SimilarityCard from '../../components/similarity/SimilarityCard';
@@ -14,7 +15,7 @@ import {
   FileText, LayoutDashboard, Users, UserCog,
   ChevronLeft, Calendar, Globe, Mail, Hash,
   Brain, Search, AlignLeft, UserCheck, CheckCircle2,
-  ShieldCheck,
+  ShieldCheck, Trash2, Loader2,
 } from 'lucide-react';
 
 const navItems = [
@@ -34,6 +35,10 @@ export default function AdminProposalDetail() {
   const [error, setError]       = useState<string | null>(null);
   const [tab, setTab]           = useState<Tab>('overview');
 
+  // Delete state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting]               = useState(false);
+
   const load = () => {
     if (!id) return;
     setLoading(true);
@@ -45,6 +50,19 @@ export default function AdminProposalDetail() {
   };
 
   useEffect(load, [id]);
+
+  const confirmDelete = async () => {
+    if (!proposal) return;
+    setDeleting(true);
+    try {
+      await proposalsApi.deleteProposal(proposal._id);
+      toast.success('Proposal deleted successfully');
+      navigate('/admin/proposals');
+    } catch {
+      toast.error('Failed to delete proposal');
+      setDeleting(false);
+    }
+  };
 
   const tabs: { id: Tab; label: string; icon: typeof Brain; dot?: boolean }[] = [
     { id: 'overview',     label: 'Overview',       icon: Hash },
@@ -62,29 +80,73 @@ export default function AdminProposalDetail() {
           <ChevronLeft className="w-4 h-4" /> Back
         </button>
         {proposal && (
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 ring-1 ring-amber-200">
-                <ShieldCheck className="w-3 h-3" /> Admin View
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
-                {proposal.domain}
-              </span>
-              <span>{formatDate(proposal.uploaded_at)}</span>
-              <span className="text-slate-300">·</span>
-              <span>{proposal.researcher_email}</span>
-              {proposal.human_review && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
-                  <CheckCircle2 className="w-3 h-3" /> Expert Reviewed
+          <div className="flex-1 min-w-0 flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 ring-1 ring-amber-200">
+                  <ShieldCheck className="w-3 h-3" /> Admin View
                 </span>
-              )}
-            </p>
+              </div>
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
+                  {proposal.domain}
+                </span>
+                <span>{formatDate(proposal.uploaded_at)}</span>
+                <span className="text-slate-300">·</span>
+                <span>{proposal.researcher_email}</span>
+                {proposal.human_review && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
+                    <CheckCircle2 className="w-3 h-3" /> Expert Reviewed
+                  </span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
+            >
+              <Trash2 className="w-4 h-4" /> Delete Proposal
+            </button>
           </div>
         )}
       </div>
+
+      {/* Delete Modal */}
+      {showDeleteModal && proposal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-slide-up">
+            <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Trash2 className="w-6 h-6 text-rose-500" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800 text-center mb-2">Delete Proposal</h3>
+            <p className="text-sm text-slate-500 text-center mb-6">
+              Are you sure you want to delete{' '}
+              <span className="font-semibold text-slate-700">
+                "{proposal.title}"
+              </span>
+              ? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="flex-1 btn-ghost text-slate-600 py-2.5 justify-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>

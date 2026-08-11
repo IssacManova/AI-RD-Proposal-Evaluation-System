@@ -3,10 +3,21 @@ import type { UploadProposalResponse } from '../types';
 
 const LOCAL_KEY = 'ai_rd_proposals';
 
+/** Helper – sort proposal list descending by uploaded_at / _id */
+const sortByDateDesc = (list: UploadProposalResponse['proposal'][]): UploadProposalResponse['proposal'][] => {
+  return [...list].sort((a, b) => {
+    const timeA = a.uploaded_at ? new Date(a.uploaded_at).getTime() : 0;
+    const timeB = b.uploaded_at ? new Date(b.uploaded_at).getTime() : 0;
+    if (timeA !== timeB) return timeB - timeA;
+    return (b._id || '').localeCompare(a._id || '');
+  });
+};
+
 /** Helper – read cached proposals from localStorage */
 const getCached = (): UploadProposalResponse['proposal'][] => {
   try {
-    return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+    const data = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+    return sortByDateDesc(data);
   } catch {
     return [];
   }
@@ -17,7 +28,8 @@ const cacheProposal = (proposal: UploadProposalResponse['proposal']) => {
   const existing = getCached();
   // Avoid duplicates by _id
   const filtered = existing.filter((p) => p._id !== proposal._id);
-  localStorage.setItem(LOCAL_KEY, JSON.stringify([proposal, ...filtered]));
+  const updated = sortByDateDesc([proposal, ...filtered]);
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
 };
 
 export const proposalsApi = {
@@ -52,24 +64,23 @@ export const proposalsApi = {
   },
 
   /**
-   * GET /proposal/my-proposals  (NOT YET IMPLEMENTED IN BACKEND)
-   * Falls back to localStorage cache.
+   * GET /proposal/my-proposals
+   * Returns current researcher's submitted proposals.
    */
   getMyProposals: async (): Promise<UploadProposalResponse['proposal'][]> => {
     try {
       const res = await api.get<{ proposals: UploadProposalResponse['proposal'][] }>(
         '/proposal/my-proposals',
       );
-      return res.data.proposals;
+      return sortByDateDesc(res.data.proposals);
     } catch {
-      // Backend endpoint not yet available — return cached data
       return getCached();
     }
   },
 
   /**
-   * GET /proposal/:id  (NOT YET IMPLEMENTED IN BACKEND)
-   * Falls back to localStorage cache lookup.
+   * GET /proposal/:id
+   * Fetch single proposal by ID.
    */
   getProposalById: async (id: string): Promise<UploadProposalResponse['proposal'] | null> => {
     try {
@@ -83,18 +94,42 @@ export const proposalsApi = {
   },
 
   /**
-   * GET /proposal/all  (NOT YET IMPLEMENTED IN BACKEND)
-   * Admin/reviewer endpoint — returns all proposals.
+   * GET /proposal/all
+   * Admin/reviewer endpoint — returns all proposals sorted by uploaded_at descending.
    */
   getAllProposals: async (): Promise<UploadProposalResponse['proposal'][]> => {
     try {
       const res = await api.get<{ proposals: UploadProposalResponse['proposal'][] }>(
         '/proposal/all',
       );
-      return res.data.proposals;
+      return sortByDateDesc(res.data.proposals);
     } catch {
       return getCached();
     }
+  },
+
+  /**
+   * POST /proposal/:id/evaluate
+   * Trigger AI re-evaluation for a single proposal.
+   */
+  reEvaluateProposal: async (id: string): Promise<UploadProposalResponse['proposal']> => {
+    const res = await api.post<{ proposal: UploadProposalResponse['proposal'] }>(
+      `/proposal/${id}/evaluate`,
+    );
+    cacheProposal(res.data.proposal);
+    return res.data.proposal;
+  },
+
+  /**
+   * DELETE /proposal/:id
+   * Admin: delete a proposal.
+   */
+  deleteProposal: async (id: string): Promise<{ message: string }> => {
+    const res = await api.delete<{ message: string }>(`/proposal/${id}`);
+    const existing = getCached();
+    const filtered = existing.filter((p) => p._id !== id);
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(filtered));
+    return res.data;
   },
 
   /** Clear local cache (used on logout) */
@@ -102,3 +137,5 @@ export const proposalsApi = {
     localStorage.removeItem(LOCAL_KEY);
   },
 };
+
+

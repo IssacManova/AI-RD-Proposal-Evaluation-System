@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import ProposalTable from '../../components/proposals/ProposalTable';
@@ -7,7 +8,7 @@ import { proposalsApi } from '../../api/proposals';
 import type { Proposal } from '../../types';
 import {
   Users, FileText, CheckCircle, Clock, LayoutDashboard,
-  UserCog, BarChart2, UserCheck, Brain, TrendingUp,
+  UserCog, BarChart2, UserCheck, Brain, TrendingUp, Trash2, Loader2,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -28,9 +29,36 @@ export default function AdminDashboard() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading]     = useState(true);
 
+  // Delete modal state
+  const [deleteTarget, setDeleteTarget] = useState<Proposal | null>(null);
+  const [deleting, setDeleting]         = useState(false);
+
+  const fetchProposals = () => {
+    proposalsApi.getAllProposals()
+      .then((data) => setProposals(data))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
-    proposalsApi.getAllProposals().then(setProposals).finally(() => setLoading(false));
+    fetchProposals();
+    const interval = setInterval(fetchProposals, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await proposalsApi.deleteProposal(deleteTarget._id);
+      toast.success('Proposal deleted successfully');
+      setProposals((prev) => prev.filter((p) => p._id !== deleteTarget._id));
+      setDeleteTarget(null);
+    } catch {
+      toast.error('Failed to delete proposal');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   // ── Mathematically consistent stats ──────────────────────────────────────
   const aiEvaluated     = proposals.filter((p) => p.evaluation?.overall_score !== undefined && !p.evaluation?.error);
@@ -201,9 +229,49 @@ export default function AdminDashboard() {
                 View all →
               </Link>
             </div>
-            <ProposalTable proposals={proposals.slice(0, 10)} role="admin" />
+            <ProposalTable
+              proposals={proposals.slice(0, 10)}
+              role="admin"
+              onDelete={(p) => setDeleteTarget(p)}
+            />
           </div>
         </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-slide-up">
+            <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Trash2 className="w-6 h-6 text-rose-500" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800 text-center mb-2">Delete Proposal</h3>
+            <p className="text-sm text-slate-500 text-center mb-6">
+              Are you sure you want to delete{' '}
+              <span className="font-semibold text-slate-700">
+                "{deleteTarget.title}"
+              </span>
+              ? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="flex-1 btn-ghost text-slate-600 py-2.5 justify-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </DashboardLayout>
   );

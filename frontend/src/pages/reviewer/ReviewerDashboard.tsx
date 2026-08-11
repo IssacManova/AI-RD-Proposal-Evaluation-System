@@ -24,8 +24,14 @@ export default function ReviewerDashboard() {
   const [loading, setLoading]    = useState(true);
   const { user } = useAuth();
 
-  useEffect(() => {
+  const fetchProposals = () => {
     proposalsApi.getAllProposals().then(setProposals).finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchProposals();
+    const interval = setInterval(fetchProposals, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // ── Correct stat computations ─────────────────────────────────────────────

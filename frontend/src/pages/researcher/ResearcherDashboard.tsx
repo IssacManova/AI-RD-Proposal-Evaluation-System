@@ -24,8 +24,14 @@ export default function ResearcherDashboard() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchProposals = () => {
     proposalsApi.getMyProposals().then(setProposals).finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchProposals();
+    const interval = setInterval(fetchProposals, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // ── Computed stats ────────────────────────────────────────────────────────

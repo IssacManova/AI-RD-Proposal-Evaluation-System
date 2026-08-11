@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import ProposalTable from '../../components/proposals/ProposalTable';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -8,7 +9,7 @@ import { proposalsApi } from '../../api/proposals';
 import type { Proposal } from '../../types';
 import {
   FileText, LayoutDashboard, Users, UserCog, Search,
-  Brain, UserCheck, CheckCircle, Clock, X,
+  Brain, UserCheck, CheckCircle, Clock, X, Trash2, Loader2,
 } from 'lucide-react';
 
 const navItems = [
@@ -30,6 +31,10 @@ export default function ProposalManagement() {
   const [aiFilter, setAIFilter]         = useState<AIFilter>('all');
   const [humanFilter, setHumanFilter]   = useState<HumanFilter>('all');
 
+  // Delete modal state
+  const [deleteTarget, setDeleteTarget] = useState<Proposal | null>(null);
+  const [deleting, setDeleting]         = useState(false);
+
   const load = () => {
     setLoading(true);
     setError(null);
@@ -39,7 +44,26 @@ export default function ProposalManagement() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+    const interval = setInterval(load, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await proposalsApi.deleteProposal(deleteTarget._id);
+      toast.success('Proposal deleted successfully');
+      setProposals((prev) => prev.filter((p) => p._id !== deleteTarget._id));
+      setDeleteTarget(null);
+    } catch {
+      toast.error('Failed to delete proposal');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const domains = [...new Set(proposals.map((p) => p.domain))].sort();
 
@@ -98,17 +122,16 @@ export default function ProposalManagement() {
           <div key={label} className={`rounded-xl border p-3 flex items-center gap-3 ${cls}`}>
             <Icon className="w-4 h-4 flex-shrink-0 opacity-70" />
             <div>
-              <p className="text-xs opacity-70 font-medium">{label}</p>
-              <p className="text-xl font-extrabold">{value}</p>
+              <p className="text-xl font-bold">{value}</p>
+              <p className="text-xs opacity-75">{label}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Filter Toolbar */}
       <div className="card p-4 mb-5 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -119,14 +142,20 @@ export default function ProposalManagement() {
               className="input-field pl-9"
             />
           </div>
-          {/* Domain filter */}
-          <select value={domainFilter} onChange={(e) => setDomainFilter(e.target.value)} className="input-field sm:w-48">
+          <select
+            value={domainFilter}
+            onChange={(e) => setDomainFilter(e.target.value)}
+            className="input-field sm:w-52"
+          >
             <option value="">All Domains</option>
-            {domains.map((d) => <option key={d} value={d}>{d}</option>)}
+            {domains.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
           </select>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center gap-4 pt-1 border-t border-slate-100">
           {/* AI Status filter */}
           <div className="flex items-center gap-2">
             <Brain className="w-3.5 h-3.5 text-slate-400" />
@@ -204,7 +233,47 @@ export default function ProposalManagement() {
           />
         )
       ) : (
-        <ProposalTable proposals={filtered} role="admin" />
+        <ProposalTable
+          proposals={filtered}
+          role="admin"
+          onDelete={(p) => setDeleteTarget(p)}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-slide-up">
+            <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Trash2 className="w-6 h-6 text-rose-500" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800 text-center mb-2">Delete Proposal</h3>
+            <p className="text-sm text-slate-500 text-center mb-6">
+              Are you sure you want to delete{' '}
+              <span className="font-semibold text-slate-700">
+                "{deleteTarget.title}"
+              </span>
+              ? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="flex-1 btn-ghost text-slate-600 py-2.5 justify-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </DashboardLayout>
   );

@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import type { Proposal } from '../../types';
 import { formatDate } from '../../utils/format';
 import RecommendationBadge from '../ui/RecommendationBadge';
-import { Eye, UserCheck, ChevronUp, ChevronDown, ChevronsUpDown, Brain, Clock } from 'lucide-react';
+import { Eye, UserCheck, ChevronUp, ChevronDown, ChevronsUpDown, Brain, Clock, Trash2 } from 'lucide-react';
 
 interface Props {
   proposals: Proposal[];
   role?: 'researcher' | 'reviewer' | 'admin';
+  onDelete?: (proposal: Proposal) => void;
 }
 
 type SortKey = 'title' | 'domain' | 'uploaded_at' | 'score';
@@ -47,7 +48,7 @@ function HumanStatusBadge({ proposal }: { proposal: Proposal }) {
   return <span className="badge-amber">Awaiting Review</span>;
 }
 
-export default function ProposalTable({ proposals, role = 'researcher' }: Props) {
+export default function ProposalTable({ proposals, role = 'researcher', onDelete }: Props) {
   const navigate = useNavigate();
   const [sortKey, setSortKey]  = useState<SortKey>('uploaded_at');
   const [sortDir, setSortDir]  = useState<SortDir>('desc');
@@ -176,13 +177,29 @@ export default function ProposalTable({ proposals, role = 'researcher' }: Props)
 
                 {/* Actions */}
                 <td className="px-4 py-3.5">
-                  <button
-                    onClick={() => navigate(detailPath(p._id))}
-                    className="btn-ghost text-xs py-1.5 px-3 text-primary-600 hover:bg-primary-50 hover:text-primary-700"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    View
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => navigate(detailPath(p._id))}
+                      className="btn-ghost text-xs py-1.5 px-3 text-primary-600 hover:bg-primary-50 hover:text-primary-700"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      View
+                    </button>
+
+                    {role === 'admin' && onDelete && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(p);
+                        }}
+                        className="btn-ghost text-xs py-1.5 px-2.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                        title="Delete proposal"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
