@@ -4,6 +4,7 @@ import { Menu, X, Brain, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import type { LucideIcon } from 'lucide-react';
 import Sidebar from './Sidebar';
+import NotificationBell from './NotificationBell';
 
 interface NavItem {
   label: string;
@@ -21,7 +22,7 @@ interface Props {
 export default function DashboardLayout({ items, role, children, pageTitle }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -91,16 +92,33 @@ export default function DashboardLayout({ items, role, children, pageTitle }: Pr
           ${sidebarCollapsed ? 'lg:ml-[68px]' : 'lg:ml-60'}
         `}
       >
-        {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setMobileOpen(true)} className="btn-ghost p-1.5">
-            <Menu className="w-5 h-5 text-slate-600" />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-primary-600 rounded-md flex items-center justify-center shadow-glow">
-              <Brain className="w-4 h-4 text-white" />
+        {/* Top bar header */}
+        <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setMobileOpen(true)} className="lg:hidden btn-ghost p-1.5">
+              <Menu className="w-5 h-5 text-slate-600" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="lg:hidden w-6 h-6 bg-primary-600 rounded-md flex items-center justify-center shadow-glow">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-bold text-slate-800">{pageTitle || 'Dashboard'}</span>
             </div>
-            <span className="text-sm font-bold text-slate-800">{pageTitle || 'Dashboard'}</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Notification Bell */}
+            <NotificationBell />
+
+            {/* Profile pill */}
+            <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
+              <div className="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">
+                {user?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <span className="text-xs font-semibold text-slate-700 max-w-[140px] truncate">
+                {user?.email}
+              </span>
+            </div>
           </div>
         </header>
 

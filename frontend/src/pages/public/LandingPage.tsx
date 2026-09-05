@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import {
   Brain, Upload, Search, Star, ShieldCheck, Users, BarChart2,
-  ArrowRight, CheckCircle, Cpu, Database, Zap, BookOpen, FileText,
+  ArrowRight, CheckCircle, Cpu, Database, Zap, BookOpen, FileText, ClipboardCheck,
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -53,6 +53,7 @@ export default function LandingPage() {
                 <Pill label="Human-in-the-Loop" />
                 <Pill label="PDF Analysis" />
                 <Pill label="AI Evaluation" />
+                <Pill label="Format Validation" />
               </div>
             </div>
 
@@ -249,19 +250,22 @@ function FeatureCard({ icon: Icon, title, desc, color }: { icon: typeof Brain; t
 }
 
 const features = [
-  { icon: Upload, title: 'PDF Upload & Extraction', desc: 'Upload research proposals as PDFs. Text is automatically extracted and preprocessed for AI analysis.', color: 'bg-primary-50 text-primary-600' },
-  { icon: Brain, title: 'Gemini AI Evaluation', desc: 'Google Gemini evaluates novelty, methodology, feasibility, and clarity with structured scoring.', color: 'bg-violet-50 text-violet-600' },
-  { icon: Search, title: 'Semantic Similarity', desc: 'Sentence-BERT embeddings detect semantically similar proposals for human review.', color: 'bg-sky-50 text-sky-600' },
-  { icon: Star, title: 'Structured Scoring', desc: 'Consistent numerical scores with strengths, weaknesses, and actionable suggestions.', color: 'bg-amber-50 text-amber-600' },
-  { icon: Users, title: 'Role-Based Access', desc: 'Separate portals for researchers, reviewers, and administrators with appropriate controls.', color: 'bg-emerald-50 text-emerald-600' },
-  { icon: ShieldCheck, title: 'Human-in-the-Loop', desc: 'AI assists — reviewers decide. Final evaluation authority rests with qualified human experts.', color: 'bg-rose-50 text-rose-600' },
+  { icon: Upload,         title: 'PDF Upload & Extraction',   desc: 'Upload research proposals as PDFs. Text is automatically extracted and preprocessed for AI analysis.',                                   color: 'bg-primary-50 text-primary-600' },
+  { icon: ClipboardCheck, title: 'Format Validation',         desc: 'Automatically checks for all 8 required sections — abstract, introduction, methodology, references, and more.',                        color: 'bg-indigo-50 text-indigo-600'   },
+  { icon: Brain,          title: 'Gemini AI Evaluation',       desc: 'Google Gemini evaluates novelty, methodology, feasibility, and clarity with structured scoring.',                                        color: 'bg-violet-50 text-violet-600'   },
+  { icon: Search,         title: 'Semantic Similarity',        desc: 'Sentence-BERT embeddings detect semantically similar proposals for human review.',                                                       color: 'bg-sky-50 text-sky-600'         },
+  { icon: Star,           title: 'Structured Scoring',         desc: 'Consistent numerical scores with strengths, weaknesses, and actionable suggestions.',                                                     color: 'bg-amber-50 text-amber-600'     },
+  { icon: Users,          title: 'Role-Based Access',          desc: 'Separate portals for researchers, reviewers, and administrators with appropriate controls.',                                              color: 'bg-emerald-50 text-emerald-600' },
+  { icon: ShieldCheck,    title: 'Human-in-the-Loop',          desc: 'AI assists — reviewers decide. Final evaluation authority rests with qualified human experts.',                                            color: 'bg-rose-50 text-rose-600'       },
+  { icon: FileText,       title: 'PDF Report Generation',      desc: 'Download a complete evaluation report as a PDF including AI scores, human review, similarity results, and format check.',               color: 'bg-teal-50 text-teal-600'       },
 ];
 
 const steps = [
-  { icon: Upload, title: 'Upload Proposal', desc: 'Researcher uploads a PDF research proposal to the platform.' },
-  { icon: Cpu, title: 'AI Processing', desc: 'Gemini evaluates quality; Sentence-BERT generates semantic embeddings.' },
-  { icon: Database, title: 'Similarity Check', desc: 'Cosine similarity identifies semantically related existing proposals.' },
-  { icon: BookOpen, title: 'Reviewer Decision', desc: 'Human reviewer examines AI insights and makes the final evaluation decision.' },
+  { icon: Upload,         title: 'Upload Proposal',    desc: 'Researcher uploads a PDF research proposal to the platform.' },
+  { icon: ClipboardCheck, title: 'Format Validation',  desc: 'The system automatically checks for all required sections: abstract, methodology, references and more.' },
+  { icon: Cpu,            title: 'AI Processing',      desc: 'Gemini evaluates quality; Sentence-BERT generates semantic embeddings for similarity.' },
+  { icon: Database,       title: 'Similarity Check',   desc: 'Cosine similarity identifies semantically related existing proposals in the database.' },
+  { icon: BookOpen,       title: 'Reviewer Decision',  desc: 'Human reviewer examines AI insights and makes the final evaluation decision.' },
 ];
 
 const tech = [

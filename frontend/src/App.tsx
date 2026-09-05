@@ -8,6 +8,8 @@ import LandingPage    from './pages/public/LandingPage';
 import LoginPage      from './pages/public/LoginPage';
 import RegisterPage   from './pages/public/RegisterPage';
 
+import NotFoundPage  from './pages/public/NotFoundPage';
+
 // Researcher
 import ResearcherDashboard from './pages/researcher/ResearcherDashboard';
 import UploadProposal      from './pages/researcher/UploadProposal';
@@ -123,7 +125,7 @@ function App() {
           } />
 
           {/* ── Fallback ── */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

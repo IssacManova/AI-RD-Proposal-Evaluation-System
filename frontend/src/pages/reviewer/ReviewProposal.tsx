@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import EvaluationCard from '../../components/evaluation/EvaluationCard';
 import SimilarityCard from '../../components/similarity/SimilarityCard';
+import FormatCheckCard from '../../components/proposals/FormatCheckCard';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import ErrorState from '../../components/ui/ErrorState';
 import ScoreRing from '../../components/ui/ScoreRing';
@@ -11,9 +12,10 @@ import { proposalsApi } from '../../api/proposals';
 import { evaluationsApi } from '../../api/evaluations';
 import type { Proposal, HumanReview, RecommendationStatus } from '../../types';
 import { formatDate } from '../../utils/format';
+import { generateProposalReport } from '../../utils/generateReport';
 import {
   ChevronLeft, FileText, LayoutDashboard, User, BookOpen,
-  Brain, UserCheck, Send, CheckCircle2, Calendar, Star,
+  Brain, UserCheck, Send, CheckCircle2, Calendar, Star, Download,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
@@ -181,21 +183,30 @@ export default function ReviewProposal() {
           <ChevronLeft className="w-4 h-4" /> Back
         </button>
         {proposal && (
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
-                {proposal.domain}
-              </span>
-              <span>{formatDate(proposal.uploaded_at)}</span>
-              <span className="text-slate-300">·</span>
-              <span>{proposal.researcher_email}</span>
-              {alreadyReviewed && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
-                  <CheckCircle2 className="w-3 h-3" /> Reviewed
+          <div className="flex-1 min-w-0 flex items-start justify-between gap-4 flex-wrap">
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
+                  {proposal.domain}
                 </span>
-              )}
-            </p>
+                <span>{formatDate(proposal.uploaded_at)}</span>
+                <span className="text-slate-300">·</span>
+                <span>{proposal.researcher_email}</span>
+                {alreadyReviewed && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
+                    <CheckCircle2 className="w-3 h-3" /> Reviewed
+                  </span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => generateProposalReport(proposal)}
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex-shrink-0"
+            >
+              <Download className="w-4 h-4" />
+              Download Report
+            </button>
           </div>
         )}
       </div>
@@ -236,7 +247,13 @@ export default function ReviewProposal() {
 
           {/* Tab content */}
           {tab === 'ai-evaluation' && proposal.evaluation && (
-            <EvaluationCard evaluation={proposal.evaluation} />
+            <div className="space-y-5">
+              <EvaluationCard evaluation={proposal.evaluation} />
+              {/* Format check — shown here so reviewers know about structural issues */}
+              {proposal.format_check && (
+                <FormatCheckCard formatCheck={proposal.format_check} />
+              )}
+            </div>
           )}
 
           {tab === 'similarity' && (

@@ -9,7 +9,7 @@ import { proposalsApi } from '../../api/proposals';
 import type { Proposal } from '../../types';
 import {
   FileText, LayoutDashboard, Users, UserCog, Search,
-  Brain, UserCheck, CheckCircle, Clock, X, Trash2, Loader2,
+  Brain, UserCheck, CheckCircle, Clock, X, Trash2, Loader2, AlertTriangle,
 } from 'lucide-react';
 
 const navItems = [
@@ -19,8 +19,9 @@ const navItems = [
   { label: 'Profile',   href: '/admin/profile',   icon: UserCog },
 ];
 
-type AIFilter    = 'all' | 'evaluated' | 'awaiting';
-type HumanFilter = 'all' | 'reviewed' | 'awaiting';
+type AIFilter     = 'all' | 'evaluated' | 'awaiting';
+type HumanFilter  = 'all' | 'reviewed' | 'awaiting';
+type FormatFilter = 'all' | 'valid' | 'issues';
 
 export default function ProposalManagement() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -30,6 +31,7 @@ export default function ProposalManagement() {
   const [domainFilter, setDomainFilter] = useState('');
   const [aiFilter, setAIFilter]         = useState<AIFilter>('all');
   const [humanFilter, setHumanFilter]   = useState<HumanFilter>('all');
+  const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
 
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<Proposal | null>(null);
@@ -85,7 +87,12 @@ export default function ProposalManagement() {
       humanFilter === 'reviewed' ? !!p.human_review :
       /* awaiting */               !p.human_review;
 
-    return matchSearch && matchDomain && matchAI && matchHuman;
+    const matchFormat =
+      formatFilter === 'all'   ? true :
+      formatFilter === 'valid'  ? p.format_check?.is_valid === true :
+      /* issues */                p.format_check?.is_valid === false;
+
+    return matchSearch && matchDomain && matchAI && matchHuman && matchFormat;
   });
 
   // Counts
@@ -94,13 +101,14 @@ export default function ProposalManagement() {
   const humanReviewed = proposals.filter((p) => !!p.human_review).length;
   const awaitingHuman = proposals.filter((p) => p.evaluation?.overall_score !== undefined && !p.evaluation?.error && !p.human_review).length;
 
-  const hasFilters = !!search || !!domainFilter || aiFilter !== 'all' || humanFilter !== 'all';
+  const hasFilters = !!search || !!domainFilter || aiFilter !== 'all' || humanFilter !== 'all' || formatFilter !== 'all';
 
   const clearFilters = () => {
     setSearch('');
     setDomainFilter('');
     setAIFilter('all');
     setHumanFilter('all');
+    setFormatFilter('all');
   };
 
   return (
@@ -190,6 +198,25 @@ export default function ProposalManagement() {
                 }`}
               >
                 {f === 'all' ? 'All' : f === 'reviewed' ? 'Reviewed' : 'Awaiting'}
+              </button>
+            ))}
+          </div>
+
+          {/* Format filter */}
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-xs font-semibold text-slate-500">Format:</span>
+            {(['all', 'valid', 'issues'] as FormatFilter[]).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFormatFilter(f)}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  formatFilter === f
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {f === 'all' ? 'All' : f === 'valid' ? 'Valid' : 'Issues'}
               </button>
             ))}
           </div>

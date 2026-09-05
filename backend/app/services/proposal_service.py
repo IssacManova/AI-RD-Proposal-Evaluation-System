@@ -7,6 +7,7 @@ from app.services.preprocessing import preprocess_text
 from app.services.embedding_service import generate_embedding
 from app.services.evaluation_service import evaluate_proposal
 from app.services.similarity_service import calculate_similarity
+from app.services.format_check_service import check_format
 
 from app.config.database import db
 from app.models.proposal import Proposal
@@ -35,6 +36,9 @@ def save_proposal(file, title, domain, researcher_email):
 
     # Extract text from PDF
     raw_text = extract_text(str(file_path))
+
+    # Run format/structure check on raw text (before preprocessing)
+    format_check = check_format(raw_text)
 
     # Preprocess extracted text
     clean_text = preprocess_text(raw_text)
@@ -95,6 +99,9 @@ def save_proposal(file, title, domain, researcher_email):
         proposal_data["similarity_score"] = similarity_results[0]["similarity_score"]
     else:
         proposal_data["similarity_score"] = None
+
+    # Add format/structure check result
+    proposal_data["format_check"] = format_check
 
     # Store proposal in MongoDB
     result = proposal_collection.insert_one(proposal_data)

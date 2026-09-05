@@ -61,6 +61,41 @@ export interface SimilarityMatch {
   similarity_score: number;
 }
 
+// ─── Format Check ────────────────────────────────────────────────────────────
+export interface FormatCheckSection {
+  id: string;
+  label: string;
+  found: boolean;
+  required: boolean;
+}
+
+export interface FormatCheck {
+  format_standard?: string;
+  is_valid: boolean;
+  score: number;           // 0-100
+  total_sections: number;
+  found_count: number;
+  missing_count: number;
+  sections: FormatCheckSection[];
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+export interface AppNotification {
+  _id: string;
+  user_email: string;
+  title: string;
+  message: string;
+  proposal_id: string;
+  type: string;
+  read: boolean;
+  created_at: string;
+}
+
+export interface NotificationsResponse {
+  notifications: AppNotification[];
+  unread_count: number;
+}
+
 // ─── Proposal ────────────────────────────────────────────────────────────────
 export interface Proposal {
   _id: string;
@@ -75,6 +110,7 @@ export interface Proposal {
   similarity: SimilarityMatch[];
   similarity_score: number | null;
   human_review?: HumanReview;
+  format_check?: FormatCheck;
 }
 
 export interface UploadProposalResponse {

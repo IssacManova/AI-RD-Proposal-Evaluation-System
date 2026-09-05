@@ -8,14 +8,16 @@ import HumanReviewCard from '../../components/evaluation/HumanReviewCard';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import ErrorState from '../../components/ui/ErrorState';
 import RecommendationBadge from '../../components/ui/RecommendationBadge';
+import FormatCheckCard from '../../components/proposals/FormatCheckCard';
 import { proposalsApi } from '../../api/proposals';
 import type { Proposal } from '../../types';
 import { formatDate } from '../../utils/format';
+import { generateProposalReport } from '../../utils/generateReport';
 import {
   FileText, LayoutDashboard, Users, UserCog,
   ChevronLeft, Calendar, Globe, Mail, Hash,
   Brain, Search, AlignLeft, UserCheck, CheckCircle2,
-  ShieldCheck, Trash2, Loader2,
+  ShieldCheck, Trash2, Loader2, Download,
 } from 'lucide-react';
 
 const navItems = [
@@ -102,12 +104,21 @@ export default function AdminProposalDetail() {
                 )}
               </p>
             </div>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
-            >
-              <Trash2 className="w-4 h-4" /> Delete Proposal
-            </button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => generateProposalReport(proposal)}
+                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Download className="w-4 h-4" />
+                Download Report
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Proposal
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -238,6 +249,11 @@ function AdminOverviewTab({ proposal }: { proposal: Proposal }) {
             )}
           </div>
         </div>
+
+        {/* Format Check */}
+        {proposal.format_check && (
+          <FormatCheckCard formatCheck={proposal.format_check} />
+        )}
 
         {/* AI vs Human score comparison — shown when both exist */}
         {hr && proposal.evaluation && !proposal.evaluation.error && (

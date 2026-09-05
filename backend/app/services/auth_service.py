@@ -18,3 +18,10 @@ def get_user_by_email(email: str):
 
 def create_user(user: dict):
     return users_collection.insert_one(user)
+
+
+def update_user_password(email: str, new_password_hash: str):
+    return users_collection.update_one(
+        {"email": email},
+        {"$set": {"password": new_password_hash}}
+    )

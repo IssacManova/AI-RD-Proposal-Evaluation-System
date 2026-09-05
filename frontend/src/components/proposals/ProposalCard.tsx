@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Proposal } from '../../types';
 import { formatDate } from '../../utils/format';
 import RecommendationBadge from '../ui/RecommendationBadge';
-import { FileText, ArrowRight, UserCheck } from 'lucide-react';
+import { FileText, ArrowRight, UserCheck, AlertTriangle } from 'lucide-react';
 
 interface Props {
   proposal: Proposal;
@@ -14,6 +14,7 @@ export default function ProposalCard({ proposal, role = 'researcher' }: Props) {
   const score = proposal.evaluation?.overall_score;
   const rec   = proposal.evaluation?.overall_recommendation;
   const humanReviewed = !!proposal.human_review;
+  const hasFormatIssue = proposal.format_check && !proposal.format_check.is_valid;
 
   const detailPath =
     role === 'reviewer' ? `/reviewer/proposals/${proposal._id}` :
@@ -76,6 +77,12 @@ export default function ProposalCard({ proposal, role = 'researcher' }: Props) {
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 ring-1 ring-sky-200">
                 <UserCheck className="w-2.5 h-2.5" />
                 Reviewed
+              </span>
+            )}
+            {hasFormatIssue && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 ring-1 ring-amber-200">
+                <AlertTriangle className="w-2.5 h-2.5" />
+                Format Issues
               </span>
             )}
           </div>

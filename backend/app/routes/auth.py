@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
-from app.schemas.user import UserRegister, UserLogin
+from app.schemas.user import UserRegister, UserLogin, ChangePassword
 from app.services.auth_service import (
     hash_password,
     verify_password,
     get_user_by_email,
-    create_user
+    create_user,
+    update_user_password
 )
+from app.dependencies.auth import get_current_user
 from app.utils.jwt import create_access_token
 
 router = APIRouter(
@@ -65,3 +67,21 @@ def login(user: UserLogin):
         "access_token": token,
         "token_type": "Bearer"
     }
+
+
+@router.post("/change-password")
+def change_password(data: ChangePassword, current_user: dict = Depends(get_current_user)):
+    db_user = get_user_by_email(current_user["email"])
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not verify_password(data.old_password, db_user["password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters long")
+
+    new_hash = hash_password(data.new_password)
+    update_user_password(current_user["email"], new_hash)
+
+    return {"message": "Password updated successfully"}

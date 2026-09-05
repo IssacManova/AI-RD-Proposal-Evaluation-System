@@ -46,5 +46,20 @@ def submit_human_review(
     if result.matched_count == 0:
         raise HTTPException(status_code=500, detail="Failed to save review.")
 
+    # Create notification for the researcher
+    researcher_email = proposal.get("researcher_email")
+    if researcher_email:
+        proposal_title = proposal.get("title", "Research Proposal")
+        rec = review_data.get("recommendation", "Decision made").replace("_", " ").title()
+        score = review_data.get("score", 0)
+        from app.services.notification_service import create_notification
+        create_notification(
+            user_email=researcher_email,
+            title="Proposal Review Completed",
+            message=f"Your proposal '{proposal_title}' was reviewed. Score: {score}/100 ({rec}).",
+            proposal_id=proposal_id,
+            notification_type="review_submitted"
+        )
+
     return {"message": "Review submitted successfully."}
 

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import Modal from '../../components/ui/Modal';
 import { useAuth } from '../../context/AuthContext';
-import { FileText, LayoutDashboard, Upload, User, Mail, Shield, KeyRound, Eye, EyeOff, LogOut } from 'lucide-react';
+import { authApi } from '../../api/auth';
+import { FileText, LayoutDashboard, Upload, User, Mail, Shield, KeyRound, Eye, EyeOff, LogOut, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -37,6 +38,7 @@ export default function ProfilePage({ role }: Props) {
   const [newPwd, setNewPwd]             = useState('');
   const [showCur, setShowCur]           = useState(false);
   const [showNew, setShowNew]           = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navItems = navsByRole[role];
   const roleLabel = { researcher: 'Researcher', reviewer: 'Reviewer', admin: 'Administrator' }[role];
@@ -44,10 +46,27 @@ export default function ProfilePage({ role }: Props) {
 
   const handleLogout = () => { logout(); navigate('/'); };
 
-  const handleChangePwd = () => {
-    toast.success('Password change is not yet available (backend endpoint pending).');
-    setShowPwdModal(false);
-    setCurrentPwd(''); setNewPwd('');
+  const handleChangePwd = async () => {
+    if (!currentPwd.trim()) {
+      toast.error('Please enter your current password');
+      return;
+    }
+    if (newPwd.length < 6) {
+      toast.error('New password must be at least 6 characters');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await authApi.changePassword({ old_password: currentPwd, new_password: newPwd });
+      toast.success('Password updated successfully!');
+      setShowPwdModal(false);
+      setCurrentPwd('');
+      setNewPwd('');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.detail || 'Failed to update password');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -133,8 +152,10 @@ export default function ProfilePage({ role }: Props) {
             </div>
           </div>
           <div className="flex gap-3 pt-1">
-            <button onClick={handleChangePwd} className="btn-primary flex-1 justify-center">Update Password</button>
-            <button onClick={() => setShowPwdModal(false)} className="btn-secondary flex-1 justify-center">Cancel</button>
+            <button onClick={handleChangePwd} disabled={isSubmitting} className="btn-primary flex-1 justify-center">
+              {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin mr-1" /> Updating...</> : 'Update Password'}
+            </button>
+            <button onClick={() => setShowPwdModal(false)} disabled={isSubmitting} className="btn-secondary flex-1 justify-center">Cancel</button>
           </div>
         </div>
       </Modal>

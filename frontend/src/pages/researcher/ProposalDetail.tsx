@@ -7,13 +7,15 @@ import HumanReviewCard from '../../components/evaluation/HumanReviewCard';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import ErrorState from '../../components/ui/ErrorState';
 import RecommendationBadge from '../../components/ui/RecommendationBadge';
+import FormatCheckCard from '../../components/proposals/FormatCheckCard';
 import { proposalsApi } from '../../api/proposals';
 import type { Proposal } from '../../types';
 import { formatDate } from '../../utils/format';
+import { generateProposalReport } from '../../utils/generateReport';
 import {
   FileText, Upload, LayoutDashboard, User,
   ChevronLeft, Calendar, Globe, Mail, Hash,
-  Brain, Search, AlignLeft, UserCheck, CheckCircle2,
+  Brain, Search, AlignLeft, UserCheck, CheckCircle2, Download,
 } from 'lucide-react';
 
 const navItems = [
@@ -63,19 +65,28 @@ export default function ProposalDetail() {
           <ChevronLeft className="w-4 h-4" /> Back
         </button>
         {proposal && (
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
-                {proposal.domain}
-              </span>
-              <span>{formatDate(proposal.uploaded_at)}</span>
-              {hasHumanReview && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
-                  <CheckCircle2 className="w-3 h-3" /> Expert Reviewed
+          <div className="flex-1 min-w-0 flex items-start justify-between gap-4 flex-wrap">
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-800 break-words">{proposal.title}</h1>
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
+                  {proposal.domain}
                 </span>
-              )}
-            </p>
+                <span>{formatDate(proposal.uploaded_at)}</span>
+                {hasHumanReview && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full ring-1 ring-sky-200 font-semibold">
+                    <CheckCircle2 className="w-3 h-3" /> Expert Reviewed
+                  </span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => generateProposalReport(proposal)}
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex-shrink-0"
+            >
+              <Download className="w-4 h-4" />
+              Download Report
+            </button>
           </div>
         )}
       </div>
@@ -160,6 +171,11 @@ function OverviewTab({ proposal }: { proposal: Proposal }) {
             <InfoRow icon={<FileText className="w-4 h-4 text-slate-400" />} label="File"       value={proposal.filename} mono />
           </div>
         </div>
+
+        {/* Format Check */}
+        {proposal.format_check && (
+          <FormatCheckCard formatCheck={proposal.format_check} />
+        )}
 
         {/* AI vs Human comparison — only show when both exist */}
         {hasHumanReview && hr && proposal.evaluation && !proposal.evaluation.error && (

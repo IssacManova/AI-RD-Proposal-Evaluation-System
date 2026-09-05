@@ -25,12 +25,12 @@
 ![Vite](https://img.shields.io/badge/Vite-5+-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 <br/>
+![IEEE Standard](https://img.shields.io/badge/IEEE-Standard_Validation-00629B?style=for-the-badge&logo=ieee&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-LLM-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Sentence--BERT-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![FAISS](https://img.shields.io/badge/FAISS-Vector_Search-00599C?style=for-the-badge&logo=facebook&logoColor=white)
 ![License](https://img.shields.io/badge/License-Educational-orange?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Active_Development-brightgreen?style=for-the-badge)
 
 ---
 
@@ -38,9 +38,9 @@
 
 ## 📖 Project Overview
 
-Evaluating academic and industrial research proposals is traditionally a manual, time-intensive process requiring extensive domain expertise. As submission volumes grow, peer reviewers and funding committees face significant bottlenecks in assessing novelty, methodological rigor, budget feasibility, and overlap with existing literature.
+Evaluating academic and industrial research proposals is traditionally a manual, time-intensive process requiring extensive domain expertise. As submission volumes grow, peer reviewers and funding committees face significant bottlenecks in assessing novelty, methodological rigor, budget feasibility, structural compliance, and overlap with existing literature.
 
-The **AI-Based Research Proposal Evaluation System** solves this challenge by serving as an advanced **Human-in-the-Loop Decision Support Platform**. It integrates Natural Language Processing (NLP), Deep Learning semantic vector embeddings (**Sentence-BERT** & **FAISS**), and Generative AI (**Google Gemini**) to automatically preprocess PDF research proposals, perform semantic similarity checks against prior submissions, score proposal dimensions, and provide qualitative feedback to human decision-makers.
+The **AI-Based Research Proposal Evaluation System** solves this challenge by serving as an advanced **Human-in-the-Loop Decision Support Platform**. It integrates Natural Language Processing (NLP), Deep Learning semantic vector embeddings (**Sentence-BERT** & **FAISS**), Generative AI (**Google Gemini**), rule-based **IEEE Standard Format Validation**, and real-time **Researcher Notifications** to preprocess PDF research proposals, check structural compliance, detect similarity, score proposal dimensions, and assist reviewers and administrators.
 
 > [!IMPORTANT]  
 > **Human-in-the-Loop Philosophy**: This platform is designed to assist and empower reviewers and administrators. It does **not** replace expert human judgment or make autonomous funding decisions.
@@ -50,6 +50,16 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
 ## 🔥 Key Features
 
 - 📄 **Automated PDF Parsing & Extraction**: Uses PyMuPDF (`fitz`) and SpaCy text cleaning pipelines to dynamically ingest research documents and parse title, abstract, problem statement, methodology, expected outcomes, budget, and timeline.
+- 📘 **IEEE Standard Format Validation**: High-performance rule-based validation engine checking uploaded PDF proposals against 8 IEEE Standard sections:
+  - IEEE Abstract
+  - IEEE Index Terms / Keywords
+  - IEEE Section I: Introduction & Motivation
+  - Problem Statement & Research Definition
+  - IEEE Section II: Literature Review / Related Work
+  - IEEE Section III: Proposed Methodology & System Architecture
+  - IEEE Section IV: Expected Outcomes & Discussion
+  - IEEE References & In-text Citations (`[1]`, `[2]`).
+- 🔔 **Real-Time Researcher Review Notifications**: Automatically notifies researchers when expert reviewers evaluate proposals, featuring an interactive top Navbar notification bell, unread badge counter, popover dropdown list, and one-click navigation to proposal detail views.
 - 🧬 **Sentence-BERT Semantic Embeddings**: Converts raw proposal text into high-dimensional dense vector embeddings using `sentence-transformers` to capture deeper conceptual meaning beyond simple keyword searches.
 - 🔍 **Vector Similarity & Overlap Detection**: Powered by **FAISS** and Cosine Similarity to compare incoming proposals against previously stored proposals in MongoDB Atlas, flagging potential duplication or overlapping research.
 - 💡 **Google Gemini Multi-Criteria LLM Evaluator**: Generates structured, multi-dimensional scorecards assessing:
@@ -59,9 +69,10 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
   - 💰 **Budget Realism**
   - 📈 **Potential Impact**
   - 📝 **Qualitative Feedback** (Strengths, Weaknesses, Constructive Recommendations).
+- 📑 **Comprehensive PDF Report Generation**: Allows researchers, reviewers, and administrators to download full PDF evaluation reports containing Proposal Overview, AI Multi-Criteria Evaluation, Human Expert Review, Semantic Similarity Analysis, and IEEE Format Check results.
 - 👥 **Role-Based Access Control (RBAC)**: Custom dashboard interfaces engineered specifically for three distinct user roles (Researchers, Reviewers, Administrators).
+- 🔐 **Secure Auth & Self-Service Password Management**: JWT Bearer token authentication with bcrypt password hashing, auth splash rehydration, and self-service password update endpoint.
 - 📊 **Dynamic Analytics Dashboards**: Interactive charts built with `Recharts` displaying evaluation metric breakdowns, score distributions, and proposal status transitions.
-- 🔒 **Secure Authentication & RBAC**: JWT Bearer token authentication with `bcrypt` password hashing and protected API route guards.
 
 ---
 
@@ -69,29 +80,29 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
 
 ```text
 [ Researcher / User ] ──► Upload PDF Proposal
-                              │
-                              ▼
+                               │
+                               ▼
         ┌───────────────────────────────────────────┐
         │        FastAPI Backend Processing         │
         └───────────────────────────────────────────┘
-                              │
-         ┌────────────────────┴────────────────────┐
-         │                                         │
-         ▼                                         ▼
-  [ PyMuPDF & SpaCy ]                    [ Sentence-BERT ]
-Text Extraction & Cleaning               Dense Vector Embedding
-         │                                         │
-         ▼                                         ▼
- [ Google Gemini AI ]                   [ FAISS Vector Index ]
-Multi-criteria LLM Grading             Cosine Similarity Matching
-         │                                         │
-         └────────────────────┬────────────────────┘
-                              │
-                              ▼
-                     [ MongoDB Atlas ]
-               Stored Proposals & Evaluations
-                              │
-                              ▼
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+         ▼                     ▼                     ▼
+ [ PyMuPDF & SpaCy ]   [ IEEE Validator ]    [ Sentence-BERT ]
+Text Extraction & NLP  8-Section IEEE Check  Dense Vector Embeddings
+         │                     │                     │
+         ▼                     ▼                     ▼
+[ Google Gemini AI ]  [ PDF Report Engine ] [ FAISS Vector Index ]
+Multi-criteria LLM    Comprehensive Reports Cosine Similarity Check
+         │                     │                     │
+         └─────────────────────┼─────────────────────┘
+                               │
+                               ▼
+                      [ MongoDB Atlas ]
+         Stored Proposals, Reviews & Notifications
+                               │
+                               ▼
         ┌───────────────────────────────────────────┐
         │   Role-Based React + TypeScript Frontend  │
         │   (Researcher | Reviewer | Admin Views)   │
@@ -108,11 +119,11 @@ Multi-criteria LLM Grading             Cosine Similarity Matching
 | **Python 3.11+** | Core Backend Programming Language |
 | **FastAPI** | High-performance Asynchronous REST API Framework |
 | **Google Gemini API** | Large Language Model (LLM) for Deep Qualitative Proposal Evaluation |
+| **IEEE Standard Engine** | Rule-Based Regex Validator for IEEE Section & Citation Compliance |
 | **Sentence-Transformers** | Sentence-BERT model (`all-MiniLM-L6-v2`) for Semantic Embeddings |
 | **FAISS & Scikit-Learn** | Fast Vector Indexing & Cosine Similarity Computation |
 | **PyMuPDF & SpaCy** | PDF Document Parsing, Text Extraction, and NLP Preprocessing |
-| **PyDantic** | Data Validation & Settings Management |
-| **MongoDB Atlas (Motor / PyMongo)** | Cloud NoSQL Database for Proposals, Users & Evaluation Records |
+| **MongoDB Atlas (Motor / PyMongo)** | Cloud NoSQL Database for Proposals, Users, Reviews & Notifications |
 | **Passlib & Python-Jose** | Password Hashing (Bcrypt) & JWT Token Authentication |
 
 ### Frontend Application
@@ -133,17 +144,18 @@ Multi-criteria LLM Grading             Cosine Similarity Matching
 
 ### 🔬 1. Researcher Dashboard
 - **Proposal Submission**: Upload research proposal PDFs along with metadata (Title, Domain, Abstract, Keywords).
-- **Track Status**: Monitor proposal lifecycle (`Submitted`, `Under Review`, `Evaluated`, `Accepted`, `Rejected`).
-- **AI Score & Feedback View**: Access automated AI evaluations, radar scorecharts, similarity score alerts, and reviewer feedback.
+- **IEEE Format Inspection**: View real-time IEEE Standard Format compliance breakdown (sections found, missing required headings, citation checks).
+- **Track Status & Notifications**: Monitor proposal lifecycle and receive instant header notifications when reviewers submit evaluations.
+- **AI Score & Download Reports**: Access multi-criteria scorecards, similarity score alerts, reviewer scores, and export PDF evaluation reports.
 
 ### 🧑‍⚖️ 2. Reviewer Dashboard
 - **Assigned Proposals**: Access proposals specifically delegated by Administrators.
-- **AI-Assisted Evaluation**: Review proposal text alongside Sentence-BERT similarity warnings and Google Gemini LLM initial evaluations.
+- **IEEE Format & Similarity Insight**: Inspect IEEE structural validation alongside Sentence-BERT similarity match percentages.
 - **Human Assessment**: Submit final reviewer scores, qualitative notes, decision recommendations, and revision requests.
 
 ### 👨‍💼 3. Administrator Dashboard
 - **Executive Analytics**: Global project status tracking, average evaluation scores, and domain breakdowns.
-- **Proposal Management**: Assign reviewers to proposals, override workflow statuses, and download full summary reports.
+- **Proposal Management & Format Filtering**: Filter proposals by AI status, review status, or IEEE Format Issues (`All`, `Valid`, `Issues`).
 - **User Management**: Manage user registrations, assign role permissions (`Researcher`, `Reviewer`, `Admin`), and toggle active status.
 
 ---
@@ -155,11 +167,11 @@ AI-RD-Evaluation-System/
 ├── backend/                      # FastAPI Python Backend
 │   ├── app/                      # Main Application Package
 │   │   ├── config/               # DB Connection & App Environment Settings
-│   │   ├── core/                 # Security, Auth Guards & Password Hashing
+│   │   ├── dependencies/         # Auth & Role Guards
 │   │   ├── ml/                   # Sentence-BERT Embedding & FAISS Engine
-│   │   ├── models/               # MongoDB Schemas & Pydantic Models
-│   │   ├── routes/               # API Endpoints (Auth, Proposals, Evaluation, Users)
-│   │   ├── services/             # Business Logic & Gemini API Orchestration
+│   │   ├── routes/               # API Endpoints (Auth, Proposals, Evaluation, Notifications, Users)
+│   │   ├── schemas/              # Pydantic Request & Response Schemas
+│   │   ├── services/             # Gemini AI, IEEE Format Checker, Notifications & Proposal Services
 │   │   ├── utils/                # PDF Extraction & SpaCy Text Preprocessing
 │   │   └── main.py               # FastAPI App Initialization
 │   ├── create_admin.py           # Admin User Initialization Script
@@ -167,11 +179,12 @@ AI-RD-Evaluation-System/
 │   └── .env                      # Backend Environment Variables
 ├── frontend/                     # React + TypeScript Frontend
 │   ├── src/                      # Frontend Application Source Code
-│   │   ├── api/                  # Axios API Clients
-│   │   ├── components/           # Reusable UI Components (Navbar, Cards, Modals)
+│   │   ├── api/                  # Axios API Clients (Auth, Proposals, Evaluation, Notifications, Users)
+│   │   ├── components/           # Reusable UI Components (Navbar, NotificationBell, Cards, Modals)
 │   │   ├── context/              # React Context (Auth State)
-│   │   ├── pages/                # Role-Based Page Views (Admin, Reviewer, Researcher)
-│   │   └── App.tsx               # Main Application Component & Router Setup
+│   │   ├── pages/                # Role-Based Page Views (Admin, Reviewer, Researcher, Public, 404)
+│   │   ├── utils/                # PDF Report Generator (`generateReport.ts`) & Formatters
+│   │   └── App.tsx               # Main Application Router
 │   ├── package.json              # Node.js Dependencies & Scripts
 │   ├── tailwind.config.js        # Tailwind CSS Configuration
 │   └── vite.config.ts            # Vite Build Tool Configuration
@@ -275,16 +288,19 @@ AI-RD-Evaluation-System/
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :---: |
-| `POST` | `/api/auth/register` | Register a new user (`Researcher`, `Reviewer`, `Admin`) | ❌ |
-| `POST` | `/api/auth/login` | Authenticate user & obtain JWT Access Token | ❌ |
-| `GET` | `/api/auth/me` | Fetch active user profile details | ✅ |
-| `POST` | `/api/proposals/upload` | Upload PDF research proposal & parse content | ✅ |
-| `GET` | `/api/proposals/` | List all proposals (Filtered by role / user) | ✅ |
-| `GET` | `/api/proposals/{id}` | Get detailed proposal view | ✅ |
-| `POST` | `/api/evaluation/evaluate/{id}` | Trigger Gemini AI + Sentence-BERT similarity evaluation | ✅ |
-| `GET` | `/api/evaluation/{proposal_id}` | Fetch evaluation report for a proposal | ✅ |
-| `GET` | `/api/users/` | List all system users (Admin only) | ✅ (Admin) |
-| `PUT` | `/api/users/{id}/role` | Update user role or active status | ✅ (Admin) |
+| `POST` | `/auth/register` | Register a new user (`researcher`, `reviewer`, `admin`) | ❌ |
+| `POST` | `/auth/login` | Authenticate user & obtain JWT Access Token | ❌ |
+| `POST` | `/auth/change-password` | Update current user account password | ✅ |
+| `POST` | `/proposal/upload` | Upload PDF proposal & parse content + IEEE check | ✅ (Researcher) |
+| `GET` | `/proposal/all` | List all proposals (Admin & Reviewer) | ✅ (Admin/Reviewer) |
+| `GET` | `/proposal/my-proposals` | List researcher's own proposals | ✅ (Researcher) |
+| `POST` | `/proposal/{id}/evaluate` | Re-evaluate AI for single proposal | ✅ |
+| `POST` | `/evaluation/{id}/review` | Submit human reviewer score & decision (Triggers Notification) | ✅ (Reviewer/Admin) |
+| `GET` | `/notifications/my-notifications` | Fetch user notifications & unread counter | ✅ |
+| `PUT` | `/notifications/{id}/read` | Mark single notification as read | ✅ |
+| `PUT` | `/notifications/mark-all-read` | Mark all notifications as read | ✅ |
+| `GET` | `/users/` | List all system users (Admin only) | ✅ (Admin) |
+| `PUT` | `/users/{id}/role` | Update user role or active status | ✅ (Admin) |
 | `GET` | `/health` | Server Health Status Check | ❌ |
 
 ---
@@ -296,5 +312,5 @@ This project is developed for educational and academic research purposes as a Fi
 ---
 
 <div align="center">
-  <p>Built with ❤️ using FastAPI, React, Sentence-BERT & Google Gemini AI</p>
+  <p>Built with ❤️ using FastAPI, React, Sentence-BERT, IEEE Standard Validation & Google Gemini AI</p>
 </div>
