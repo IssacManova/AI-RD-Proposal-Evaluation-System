@@ -11,8 +11,9 @@
   <a href="#-system-architecture">Architecture</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-installation--getting-started">Getting Started</a> •
-  <a href="#-api-reference">API Reference</a> •
-  <a href="#-role-based-workflows">User Roles</a>
+  <a href="#-api-endpoint-reference">API Reference</a> •
+  <a href="#-role-based-workflows">User Roles</a> •
+  <a href="#-directory-structure">Directory Structure</a>
 </p>
 
 ---
@@ -50,7 +51,7 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
 ## 🔥 Key Features
 
 - 📄 **Automated PDF Parsing & Extraction**: Uses PyMuPDF (`fitz`) and SpaCy text cleaning pipelines to dynamically ingest research documents and parse title, abstract, problem statement, methodology, expected outcomes, budget, and timeline.
-- 📘 **IEEE Standard Format Validation**: High-performance rule-based validation engine checking uploaded PDF proposals against 8 IEEE Standard sections:
+- 📘 **IEEE Standard Format Validation**: High-performance regex keyword validation engine checking uploaded PDF proposals against 8 IEEE Standard sections:
   - IEEE Abstract
   - IEEE Index Terms / Keywords
   - IEEE Section I: Introduction & Motivation
@@ -59,8 +60,7 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
   - IEEE Section III: Proposed Methodology & System Architecture
   - IEEE Section IV: Expected Outcomes & Discussion
   - IEEE References & In-text Citations (`[1]`, `[2]`).
-- 🔔 **Real-Time Researcher Review Notifications**: Automatically notifies researchers when expert reviewers evaluate proposals, featuring an interactive top Navbar notification bell, unread badge counter, popover dropdown list, and one-click navigation to proposal detail views.
-- 🧬 **Sentence-BERT Semantic Embeddings**: Converts raw proposal text into high-dimensional dense vector embeddings using `sentence-transformers` to capture deeper conceptual meaning beyond simple keyword searches.
+- 🧬 **Sentence-BERT Semantic Embeddings**: Converts raw proposal text into high-dimensional dense vector embeddings using `sentence-transformers` (`all-MiniLM-L6-v2`) to capture deeper conceptual meaning beyond simple keyword searches.
 - 🔍 **Vector Similarity & Overlap Detection**: Powered by **FAISS** and Cosine Similarity to compare incoming proposals against previously stored proposals in MongoDB Atlas, flagging potential duplication or overlapping research.
 - 💡 **Google Gemini Multi-Criteria LLM Evaluator**: Generates structured, multi-dimensional scorecards assessing:
   - 🌟 **Novelty & Innovation**
@@ -69,9 +69,10 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
   - 💰 **Budget Realism**
   - 📈 **Potential Impact**
   - 📝 **Qualitative Feedback** (Strengths, Weaknesses, Constructive Recommendations).
+- 🔔 **Real-Time Researcher Review Notifications**: Automatically notifies researchers when expert reviewers evaluate proposals, featuring an interactive Navbar notification bell, unread badge counter, dropdown popover, and one-click navigation to proposal detail views.
 - 📑 **Comprehensive PDF Report Generation**: Allows researchers, reviewers, and administrators to download full PDF evaluation reports containing Proposal Overview, AI Multi-Criteria Evaluation, Human Expert Review, Semantic Similarity Analysis, and IEEE Format Check results.
 - 👥 **Role-Based Access Control (RBAC)**: Custom dashboard interfaces engineered specifically for three distinct user roles (Researchers, Reviewers, Administrators).
-- 🔐 **Secure Auth & Self-Service Password Management**: JWT Bearer token authentication with bcrypt password hashing, auth splash rehydration, and self-service password update endpoint.
+- 🔐 **Secure Auth & Self-Service Password Management**: JWT Bearer token authentication with bcrypt password hashing, auth state rehydration, and self-service password change endpoint.
 - 📊 **Dynamic Analytics Dashboards**: Interactive charts built with `Recharts` displaying evaluation metric breakdowns, score distributions, and proposal status transitions.
 
 ---
@@ -80,12 +81,12 @@ The **AI-Based Research Proposal Evaluation System** solves this challenge by se
 
 ```text
 [ Researcher / User ] ──► Upload PDF Proposal
-                               │
-                               ▼
+                                │
+                                ▼
         ┌───────────────────────────────────────────┐
         │        FastAPI Backend Processing         │
         └───────────────────────────────────────────┘
-                               │
+                                │
          ┌─────────────────────┼─────────────────────┐
          │                     │                     │
          ▼                     ▼                     ▼
@@ -97,12 +98,12 @@ Text Extraction & NLP  8-Section IEEE Check  Dense Vector Embeddings
 Multi-criteria LLM    Comprehensive Reports Cosine Similarity Check
          │                     │                     │
          └─────────────────────┼─────────────────────┘
-                               │
-                               ▼
-                      [ MongoDB Atlas ]
-         Stored Proposals, Reviews & Notifications
-                               │
-                               ▼
+                                │
+                                ▼
+                       [ MongoDB Atlas ]
+          Stored Proposals, Reviews & Notifications
+                                │
+                                ▼
         ┌───────────────────────────────────────────┐
         │   Role-Based React + TypeScript Frontend  │
         │   (Researcher | Reviewer | Admin Views)   │
@@ -117,7 +118,7 @@ Multi-criteria LLM    Comprehensive Reports Cosine Similarity Check
 | Technology | Role |
 | :--- | :--- |
 | **Python 3.11+** | Core Backend Programming Language |
-| **FastAPI** | High-performance Asynchronous REST API Framework |
+| **FastAPI 0.139+** | High-performance Asynchronous REST API Framework |
 | **Google Gemini API** | Large Language Model (LLM) for Deep Qualitative Proposal Evaluation |
 | **IEEE Standard Engine** | Rule-Based Regex Validator for IEEE Section & Citation Compliance |
 | **Sentence-Transformers** | Sentence-BERT model (`all-MiniLM-L6-v2`) for Semantic Embeddings |
@@ -135,6 +136,7 @@ Multi-criteria LLM    Comprehensive Reports Cosine Similarity Check
 | **Tailwind CSS 3.4+** | Utility-first Modern Responsive Styling System |
 | **Recharts** | Interactive Analytics & Evaluation Data Visualization |
 | **Lucide React** | Sleek & Consistent Iconography |
+| **jsPDF & jsPDF-AutoTable** | Client-Side PDF Evaluation Report Generator |
 | **React Hot Toast** | Real-time User Notification System |
 | **Axios** | HTTP Client for API Communications |
 
@@ -143,38 +145,38 @@ Multi-criteria LLM    Comprehensive Reports Cosine Similarity Check
 ## 👥 Role-Based Workflows
 
 ### 🔬 1. Researcher Dashboard
-- **Proposal Submission**: Upload research proposal PDFs along with metadata (Title, Domain, Abstract, Keywords).
+- **Proposal Submission**: Upload research proposal PDFs along with metadata (Title, Domain).
 - **IEEE Format Inspection**: View real-time IEEE Standard Format compliance breakdown (sections found, missing required headings, citation checks).
-- **Track Status & Notifications**: Monitor proposal lifecycle and receive instant header notifications when reviewers submit evaluations.
+- **Track Status & Notifications**: Monitor proposal lifecycle and receive instant navbar notifications when reviewers submit evaluations.
 - **AI Score & Download Reports**: Access multi-criteria scorecards, similarity score alerts, reviewer scores, and export PDF evaluation reports.
 
 ### 🧑‍⚖️ 2. Reviewer Dashboard
-- **Assigned Proposals**: Access proposals specifically delegated by Administrators.
+- **Assigned Proposals**: Access proposals submitted for peer review.
 - **IEEE Format & Similarity Insight**: Inspect IEEE structural validation alongside Sentence-BERT similarity match percentages.
 - **Human Assessment**: Submit final reviewer scores, qualitative notes, decision recommendations, and revision requests.
 
 ### 👨‍💼 3. Administrator Dashboard
 - **Executive Analytics**: Global project status tracking, average evaluation scores, and domain breakdowns.
 - **Proposal Management & Format Filtering**: Filter proposals by AI status, review status, or IEEE Format Issues (`All`, `Valid`, `Issues`).
-- **User Management**: Manage user registrations, assign role permissions (`Researcher`, `Reviewer`, `Admin`), and toggle active status.
+- **User Management**: View system users, assign role permissions (`Researcher`, `Reviewer`, `Admin`), update status (`Active`, `Inactive`), or remove accounts.
 
 ---
 
-## 📁 Repository Directory Structure
+## 📁 Directory Structure
 
 ```text
 AI-RD-Evaluation-System/
 ├── backend/                      # FastAPI Python Backend
 │   ├── app/                      # Main Application Package
-│   │   ├── config/               # DB Connection & App Environment Settings
-│   │   ├── dependencies/         # Auth & Role Guards
-│   │   ├── ml/                   # Sentence-BERT Embedding & FAISS Engine
-│   │   ├── routes/               # API Endpoints (Auth, Proposals, Evaluation, Notifications, Users)
-│   │   ├── schemas/              # Pydantic Request & Response Schemas
+│   │   ├── config/               # Database Connection & App Environment Settings
+│   │   ├── dependencies/         # JWT Auth Guards & Role-Based Permissions
+│   │   ├── ml/                   # Sentence-BERT Embedding & FAISS Vector Engine
+│   │   ├── routes/               # API Routers (Auth, Proposal, Evaluation, Notifications, Users)
+│   │   ├── schemas/              # Pydantic Request & Response Data Schemas
 │   │   ├── services/             # Gemini AI, IEEE Format Checker, Notifications & Proposal Services
 │   │   ├── utils/                # PDF Extraction & SpaCy Text Preprocessing
-│   │   └── main.py               # FastAPI App Initialization
-│   ├── create_admin.py           # Admin User Initialization Script
+│   │   └── main.py               # FastAPI Application Entrypoint
+│   ├── create_admin.py           # Admin Account Initialization Script
 │   ├── requirements.txt          # Python Dependencies
 │   └── .env                      # Backend Environment Variables
 ├── frontend/                     # React + TypeScript Frontend
@@ -183,14 +185,14 @@ AI-RD-Evaluation-System/
 │   │   ├── components/           # Reusable UI Components (Navbar, NotificationBell, Cards, Modals)
 │   │   ├── context/              # React Context (Auth State)
 │   │   ├── pages/                # Role-Based Page Views (Admin, Reviewer, Researcher, Public, 404)
-│   │   ├── utils/                # PDF Report Generator (`generateReport.ts`) & Formatters
+│   │   ├── utils/                # Client PDF Report Generator (`generateReport.ts`) & Formatters
 │   │   └── App.tsx               # Main Application Router
 │   ├── package.json              # Node.js Dependencies & Scripts
 │   ├── tailwind.config.js        # Tailwind CSS Configuration
 │   └── vite.config.ts            # Vite Build Tool Configuration
 ├── dataset/                      # Sample Proposals & Research Data
-├── documentation/              # Architecture Diagrams & Project Specs
-└── README.md                     # Root System Documentation
+├── documentation/                # Architecture Diagrams & Project Specs
+└── README.md                     # Root Project Documentation
 ```
 
 ---
@@ -288,20 +290,25 @@ AI-RD-Evaluation-System/
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :---: |
-| `POST` | `/auth/register` | Register a new user (`researcher`, `reviewer`, `admin`) | ❌ |
+| `POST` | `/auth/register` | Register a new user account (`researcher`, `reviewer`, `admin`) | ❌ |
 | `POST` | `/auth/login` | Authenticate user & obtain JWT Access Token | ❌ |
-| `POST` | `/auth/change-password` | Update current user account password | ✅ |
-| `POST` | `/proposal/upload` | Upload PDF proposal & parse content + IEEE check | ✅ (Researcher) |
-| `GET` | `/proposal/all` | List all proposals (Admin & Reviewer) | ✅ (Admin/Reviewer) |
-| `GET` | `/proposal/my-proposals` | List researcher's own proposals | ✅ (Researcher) |
-| `POST` | `/proposal/{id}/evaluate` | Re-evaluate AI for single proposal | ✅ |
-| `POST` | `/evaluation/{id}/review` | Submit human reviewer score & decision (Triggers Notification) | ✅ (Reviewer/Admin) |
+| `POST` | `/auth/change-password` | Update logged-in user account password | ✅ |
+| `POST` | `/proposal/upload` | Upload PDF proposal & parse content + IEEE check + Similarity + AI evaluation | ✅ (Researcher) |
+| `GET` | `/proposal/all` | List all proposals | ✅ (Admin / Reviewer) |
+| `GET` | `/proposal/my-proposals` | List logged-in researcher's own proposals | ✅ (Researcher) |
+| `GET` | `/proposal/{id}` | Fetch proposal details by ID | ✅ |
+| `POST` | `/proposal/{id}/evaluate` | Re-evaluate AI model for single proposal | ✅ |
+| `DELETE` | `/proposal/{id}` | Delete proposal document & PDF file | ✅ (Admin) |
+| `POST` | `/evaluation/{id}/review` | Submit human reviewer score & decision (Triggers notification) | ✅ (Reviewer / Admin) |
 | `GET` | `/notifications/my-notifications` | Fetch user notifications & unread counter | ✅ |
 | `PUT` | `/notifications/{id}/read` | Mark single notification as read | ✅ |
-| `PUT` | `/notifications/mark-all-read` | Mark all notifications as read | ✅ |
-| `GET` | `/users/` | List all system users (Admin only) | ✅ (Admin) |
-| `PUT` | `/users/{id}/role` | Update user role or active status | ✅ (Admin) |
+| `PUT` | `/notifications/mark-all-read` | Mark all notifications as read for current user | ✅ |
+| `GET` | `/users/` | List all system users | ✅ (Admin) |
+| `GET` | `/users/{id}` | Fetch single user details | ✅ (Admin) |
+| `PATCH` | `/users/{id}` | Update user role (`researcher`, `reviewer`, `admin`), status, or name | ✅ (Admin) |
+| `DELETE` | `/users/{id}` | Delete user account (restricted for self-deletion) | ✅ (Admin) |
 | `GET` | `/health` | Server Health Status Check | ❌ |
+| `GET` | `/` | API Root Welcome Message | ❌ |
 
 ---
 
